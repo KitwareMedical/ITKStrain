@@ -26,7 +26,7 @@
 #include "itkVTKImageIO.h"
 
 template< class TPixel, unsigned int Dimension, class TTensorImage >
-int WriteOutStrains( char * outputPrefix, TTensorImage * strainImage )
+int WriteOutStrains( const char * outputPrefix, TTensorImage * strainImage )
 {
   typedef TPixel                             PixelType;
   typedef TTensorImage                       TensorImageType;
