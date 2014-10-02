@@ -5,6 +5,7 @@ set(StrainTests
   itkStrainImageFilterLagrangianTest.cxx
   itkStrainImageFilterEulerianTest.cxx
   itkStrainImageFilterDoGTest.cxx
+  itkStrainImageFilterRecursiveGaussianTest.cxx
 )
 
 CreateTestDriver(Strain "${Strain-Test_LIBRARIES}" "${StrainTests}")
@@ -40,3 +41,11 @@ itk_add_test(NAME itkStrainImageFilterDoGTest
   itkStrainImageFilterDoGTest
     DATA{Input/LineLoadDisplacement.mha}
     ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterDoGTest)
+
+itk_add_test(NAME itkStrainImageFilterRecursiveGaussianTest
+  COMMAND StrainTestDriver
+  --compare DATA{Baseline/LineLoadStrain.mha}
+    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterRecursiveGaussianTestOutput.vtk
+  itkStrainImageFilterRecursiveGaussianTest
+    DATA{Input/LineLoadDisplacement.mha}
+    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterRecursiveGaussianTest)
