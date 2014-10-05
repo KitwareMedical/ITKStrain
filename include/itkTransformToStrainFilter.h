@@ -18,6 +18,7 @@
 #ifndef __itkTransformToStrainFilter_h
 #define __itkTransformToStrainFilter_h
 
+#include "itkDataObjectDecorator.h"
 #include "itkCovariantVector.h"
 #include "itkGenerateImageSource.h"
 #include "itkSymmetricSecondRankTensor.h"
@@ -59,9 +60,10 @@ public:
   /** ImageDimension enumeration. */
   itkStaticConstMacro(ImageDimension, unsigned int, TTransform::InputSpaceDimension);
 
-  typedef TTransform                                  TransformType;
+  typedef TTransform                            TransformType;
+  typedef DataObjectDecorator< TransformType >  TransformInputType;
   typedef Image< SymmetricSecondRankTensor< TOutputValueType, ImageDimension >, ImageDimension >
-                                                      OutputImageType;
+                                                OutputImageType;
 
   /** Standard class typedefs. */
   typedef TransformToStrainFilter                Self;
@@ -75,6 +77,14 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( TransformToStrainFilter, GenerateImageSource );
+
+  /** Get/Set the coordinate transformation.
+   * Set the coordinate transform to use for resampling.  Note that this must
+   * be in physical coordinates. */
+  using Superclass::SetInput;
+  virtual void SetInput( const TransformInputType * transform ) ITK_OVERRIDE;
+  const TransformInputType * GetInput() const;
+  itkSetGetDecoratedObjectInputMacro(Transform, TransformType);
 
   /**
    * Three different types of strains can be calculated, infinitesimal (default), aka
