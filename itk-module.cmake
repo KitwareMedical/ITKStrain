@@ -5,6 +5,7 @@ itk_module(Strain
   DEPENDS
     ITKCommon
     ITKImageGradient
+    ITKImageSources
     SplitComponents
   TEST_DEPENDS
     ITKTestKernel

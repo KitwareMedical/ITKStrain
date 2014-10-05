@@ -54,5 +54,7 @@ itk_add_test(NAME itkStrainImageFilterRecursiveGaussianTest
 itk_add_test(NAME itkTransformToStrainFilterTest
   COMMAND StrainTestDriver
   itkTransformToStrainFilterTest
-    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTest)
+    "BSpline"
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTest
+    DATA{${ITK_DATA_ROOT}/Input/parametersBSpline.txt})
 
