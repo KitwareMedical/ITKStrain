@@ -28,7 +28,7 @@ namespace itk
 
 /** \class StrainImageFilter
  *
- * \brief Generate a strain image from a displacement field image.
+ * \brief Generate a strain field image from a displacement field image.
  *
  * Internally, a gradient filter (see SetGradientFilter()) is used to calculate
  * deformation gradient tensors.  This filter is used by default on each displacement Vector
@@ -53,6 +53,8 @@ namespace itk
  * engineering strain, which is appropriate for small strains, Green-Lagrangian,
  * which uses a material reference system, and Eulerian-Almansi, which uses a
  * spatial reference system.  This is set with SetStrainForm().
+ *
+ * \sa TransformToStrainFilter
  *
  * \ingroup Strain
  *
@@ -120,10 +122,9 @@ protected:
 
   StrainImageFilter();
 
-  virtual void BeforeThreadedGenerateData();
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputRegionType& outputRegion,
-    ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId ) ITK_OVERRIDE;
 
   typedef itk::SplitComponentsImageFilter< InputImageType, OperatorImageType >
     InputComponentsImageFilterType;
@@ -136,8 +137,8 @@ protected:
   StrainFormType m_StrainForm;
 
 private:
-  StrainImageFilter( const Self & );
-  void operator=( const Self & );
+  StrainImageFilter( const Self & ); // purposely not implemented
+  void operator=( const Self & ); // purposely not implemented
 };
 
 } // end namespace itk
