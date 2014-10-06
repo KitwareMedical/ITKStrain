@@ -18,6 +18,7 @@
 #ifndef __itkTransformToStrainFilter_hxx
 #define __itkTransformToStrainFilter_hxx
 
+#include "itkImageRegionIterator.h"
 #include "itkTransformToStrainFilter.h"
 
 namespace itk
@@ -71,11 +72,9 @@ TransformToStrainFilter< TTransform, TOperatorValueType, TOutputValueType >
 ::ThreadedGenerateData( const OutputRegionType& region,
                         ThreadIdType itkNotUsed( threadId ) )
 {
-  //typename InputImageType::ConstPointer input = this->GetInput();
+  OutputImageType * output = this->GetOutput();
 
-  //OutputImageType * output = this->GetOutput();
-
-  //ImageRegionIterator< OutputImageType > outputIt( output, region );
+  ImageRegionIterator< OutputImageType > outputIt( output, region );
   //// First fill the outputs with zeros.  Better way to do this?  FillBuffer does
   //// not seem to work.
   //typename OutputImageType::PixelType outputPixel;
