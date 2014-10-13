@@ -73,7 +73,7 @@ TransformToStrainFilter< TTransform, TOperatorValueType, TOutputValueType >
       }
     for( unsigned int ii = 0; ii < ImageDimension; ++ii )
       {
-      outputPixel( ii, ii ) += jacobian( ii, ii ) / static_cast< TOutputValueType >( 2 );
+      outputPixel( ii, ii ) += jacobian( ii, ii ) / static_cast< TOutputValueType >( 2 ) - static_cast< TOutputValueType >( 1 );
       }
     outputIt.Set( outputPixel );
     }
