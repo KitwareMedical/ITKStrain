@@ -38,6 +38,8 @@ void
 TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
 ::BeforeThreadedGenerateData()
 {
+  OutputImageType * output = this->GetOutput();
+  output->FillBuffer( NumericTraits< OutputPixelType >::Zero );
 }
 
 
@@ -51,7 +53,6 @@ TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
   const TransformType * input = this->GetTransform();
 
   OutputImageType * output = this->GetOutput();
-  output->FillBuffer( NumericTraits< OutputPixelType >::Zero );
   typedef ImageRegionIteratorWithIndex< OutputImageType > ImageIteratorType;
   ImageIteratorType outputIt( output, region );
 
