@@ -56,6 +56,8 @@ TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
   typedef ImageRegionIteratorWithIndex< OutputImageType > ImageIteratorType;
   ImageIteratorType outputIt( output, region );
 
+  std::cout << "TransformToStrain" << std::endl;
+
   // e_ij += 1/2( du_i/dx_j + du_j/dx_i )
   for( outputIt.GoToBegin(); !outputIt.IsAtEnd(); ++outputIt )
     {
@@ -67,15 +69,27 @@ TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
     typename OutputImageType::PixelType outputPixel = outputIt.Get();
     for( unsigned int ii = 0; ii < ImageDimension; ++ii )
       {
-      for( unsigned int jj = 0; jj < ImageDimension; ++jj )
+      for( unsigned int jj = 0; jj < ii; ++jj )
         {
+        std::cout << "jacobian(ii,jj): " << ii << jj << " " << jacobian(ii,jj) << std::endl;
         outputPixel( ii, jj ) += jacobian( ii, jj ) / static_cast< TOutputValue >( 2 );
+        //std::cout << "output(ii,jj): " << ii << jj << " " << outputPixel(ii,jj) << std::endl;
         }
+      for( unsigned int jj = ii + 1; jj < ImageDimension; ++jj )
+        {
+      std::cout << "jacobian(ii,jj): " << ii << jj << " "<< jacobian(ii,jj) << std::endl;
+        outputPixel( ii, jj ) += jacobian( ii, jj ) / static_cast< TOutputValue >( 2 );
+        //std::cout << "output(ii,jj): " << ii << jj << " " << outputPixel(ii,jj) << std::endl;
+        }
+      std::cout << "jacobian(ii,ii): " << ii << ii << " "<< jacobian(ii,ii)  - 1 << std::endl;
+      outputPixel( ii, ii ) = jacobian( ii, ii ) - static_cast< TOutputValue >( 1 );
+        std::cout << "output  (0 ,1 ): " << 0 << 1 << " " << outputPixel(0,1) << std::endl;
+        std::cout << "output  (ii,ii): " << ii << ii << " " << outputPixel(ii,ii) << std::endl;
       }
-    for( unsigned int ii = 0; ii < ImageDimension; ++ii )
-      {
-      outputPixel( ii, ii ) += jacobian( ii, ii ) / static_cast< TOutputValue >( 2 ) - static_cast< TOutputValue >( 1 );
-      }
+    //for( unsigned int ii = 0; ii < ImageDimension; ++ii )
+      //{
+      //outputPixel( ii, ii ) += jacobian( ii, ii ) / static_cast< TOutputValue >( 2 ) - static_cast< TOutputValue >( 1 );
+      //}
     outputIt.Set( outputPixel );
     }
   switch( m_StrainForm )

@@ -86,3 +86,29 @@ itk_add_test(NAME itkTransformToStrainFilterGreenLagrangianTest
     ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianAffineToDisplacementFieldStrain.mha
     )
 
+itk_add_test(NAME itkTransformToStrainFilterInfinitesimalSimilarityTest
+  COMMAND StrainTestDriver
+  --compare
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestInfinitesimalSimilarity.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestInfinitesimalSimilarityToDisplacementFieldStrain.mha
+  itkTransformToStrainFilterTest
+    "INFINITESIMAL"
+    "Similarity"
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestInfinitesimalSimilarity.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestInfinitesimalSimilarityToDisplacementField.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestInfinitesimalSimilarityToDisplacementFieldStrain.mha
+    )
+
+itk_add_test(NAME itkTransformToStrainFilterSimilarityGreenLagrangianSimilarityTest
+  COMMAND StrainTestDriver
+  --compare
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianSimilarity.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianSimilarityToDisplacementFieldStrain.mha
+  itkTransformToStrainFilterTest
+    "GREENLAGRANGIAN"
+    "Similarity"
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianSimilarity.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianSimilarityToDisplacementField.mha
+    ${ITK_TEST_OUTPUT_DIR}/itkTransformToStrainFilterTestGreenLagrangianSimilarityToDisplacementFieldStrain.mha
+    )
+
