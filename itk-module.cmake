@@ -5,9 +5,10 @@ itk_module(Strain
   DEPENDS
     ITKCommon
     ITKImageGradient
-    SplitComponents
+    ITKImageSources
   TEST_DEPENDS
     ITKTestKernel
+    ITKDisplacementField
   EXCLUDE_FROM_DEFAULT
   DESCRIPTION
     "${DOCUMENTATION}"
