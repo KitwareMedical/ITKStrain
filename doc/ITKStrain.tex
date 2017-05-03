@@ -107,52 +107,83 @@ publications must facilitate reproducibility of the reported results.
 
 \tableofcontents
 
-Using filters from the Insight Toolkit, we develop an algorithm for detecting
-and tracking thje movement of solar spots. As it is widely known, celestial
-objects such as the sun are ethereal and perfect, and therefore can not harbor
-artifacts such as spots. However, observations performed with our open source
-telescope have revealed the presence of such spots. The spots seems to continuously change positions on the solar surface.
+\section{Background}
 
-Automatic detection and tracking of the solar spot movements are of fundamental
-importance for allowing the authors to dedicate more time to perfectioning
-optical instruments and less time to the supervised acquisition of reliable
-data.
+The result of image registration is a spatial transformation that is sometimes
+non-rigid. The spatial transformation's local deformation is quantified with
+the \textit{strain tensor}. When registration occurs on images from multiple
+time points, strain is a measure of local tissue growth or atrophy. For
+example, strain can quantify the growth of a tumor or atrophy of cerebral gray
+matter. When registration occurs on images of the same tissue that experience
+mechanical stimulation, local strain quantifies the amount of local
+deformation imparted on the tissue. For instance, compression and tension of
+arterial plaque can be quantified from images of the arteries at multiple
+points in the cardiac cycle. Finally, when combined with stress in a
+constitutive model, the inverse problem can be solved to determined tissue
+viscoelasticity. For example, stiffness of a cirrhotic liver can be imaged.
 
-The reader should be warned that direct observation of the sun without proper
-equipment may result in personal injury, loss of vision and burned brains.
+Strain is a symmetric second rank tensor. \textit{Infinitesimal strain}, also
+called Cauchy's strain, linear strain, engineering strain, or small strain, is a
+first order approximation to the Green-Lagrangian or Eulerian-Almansi strain
+tensors. It is computed from the \textit{deformation gradient},
+$\mathbf{F}$, as\cite{WikipediaStrainTheory}
 
-\section{Principles of Solar Spot Detection}
+\begin{equation}
+  \mathbf{\varepsilon}=\frac{1}{2}\left(\mathbf{F}^T+\mathbf{F}\right)-\mathbf{I}
+\end{equation}
 
-Solar spots can be classified as the darkest objects present on an image of the
-solar surface. Algorithms such as watersheds, statistical classification and
-mathematical morphology are suitable for automatically detecting these features
-in images of the solar surface.
+In tensor notation,
 
+\begin{equation}
+\begin{aligned}
+\varepsilon_{ij} &= \frac{1}{2}\left(u_{i,j}+u_{j,i}\right)  \\
+&=
+\left[\begin{matrix}
+\varepsilon_{11} & \varepsilon_{12} & \varepsilon_{13} \\
+   \varepsilon_{21} & \varepsilon_{22} & \varepsilon_{23} \\
+   \varepsilon_{31} & \varepsilon_{32} & \varepsilon_{33} \\
+  \end{matrix}\right] \\
+&=
+\left[\begin{matrix}
+  \frac{\partial u_1}{\partial x_1} & \frac{1}{2} \left(\frac{\partial u_1}{\partial x_2}+\frac{\partial u_2}{\partial x_1}\right) & \frac{1}{2} \left(\frac{\partial u_1}{\partial x_3}+\frac{\partial u_3}{\partial x_1}\right) \\
+   \frac{1}{2} \left(\frac{\partial u_2}{\partial x_1}+\frac{\partial u_1}{\partial x_2}\right) & \frac{\partial u_2}{\partial x_2} & \frac{1}{2} \left(\frac{\partial u_2}{\partial x_3}+\frac{\partial u_3}{\partial x_2}\right) \\
+   \frac{1}{2} \left(\frac{\partial u_3}{\partial x_1}+\frac{\partial u_1}{\partial x_3}\right) & \frac{1}{2} \left(\frac{\partial u_3}{\partial x_2}+\frac{\partial u_2}{\partial x_3}\right) & \frac{\partial u_3}{\partial x_3} \\
+  \end{matrix}\right]
+\end{aligned}
+\end{equation}
 
-\section{Why Image Processing Papers must include Source Code, Images and Parameters }
+The \textit{Green-Lagrangian} strain tensor, where displacement derivatives are
+with respect to material coordinates, is,
 
-Modern Image Processing is most of the time performed with computers. An
-attempt to replicate the results of an algorithm described in a paper entails
-to reimplement the algorithm into source code. This task is far from trivial
-and consumes months of work. The final result can not be guarranted to be
-equivalent to the actual code that was used for testing the algorithm when the
-paper was written, and therefore it cannot be considered a baseline for
-comparing the algoritm with other algorithms availble to the reader.
+\begin{equation}
+\mathbf{E} = {1 \over 2} \left( \mathbf{F}^T \cdot \mathbf{F} - \mathbf{I} \right)
+\end{equation}
 
-Papers to the Insight Journal are written in the spirit of facilitating and
-encouraging readers to perform replication of work. In this sense, the Insight
-Journal is compliant with essential concepts of the scientific method.
+or
 
-Since the code is included with the paper, less time has to be spent in
-describing the code, and more time can be used for describing how to use the
-algorithm in particular types of images.
+\begin{equation}
+E_{ij} = {1 \over 2} \left( {\partial \, u_i \over \partial X_j} + {\partial \, u_j \over \partial X_i} +
+                         {\partial \, u_k \over \partial X_i} {\partial \, u_k \over \partial X_j} \right)
+\end{equation}
 
-For questions on the basis of the scientific method the reader is refered to
-\cite{Popper2002,Popper1971}.
+The \textit{Eulerian-Almansi} strain tensor, where displacement derivatives are
+with respect to spatial coordinates, is,
 
+\begin{equation}
+\mathbf{e} = {1 \over 2} \left( \mathbf{F} \cdot \mathbf{F}^T - \mathbf{I} \right)
+\end{equation}
 
+or
 
-\section{Pointing to other material}
+\begin{equation}
+e_{ij} = {1 \over 2} \left( {\partial \, U_i \over \partial x_j} + {\partial \, U_j \over \partial x_i} +
+                         {\partial \, U_k \over \partial x_i} {\partial \, U_k \over \partial x_j} \right)
+\end{equation}
+
+Green-Lagrangian and Eulerian-Almansi are true mathematical tensors, i.e.,
+they are invariant to translations or rotations of the coordinate system.
+
+\section{Implementation}
 
 The format of this LaTeX file, allows authors to include code snippets, like
 the following
