@@ -1,0 +1,299 @@
+%
+% Complete documentation on the extended LaTeX markup used for Insight
+% documentation is available in ``Documenting Insight'', which is part
+% of the standard documentation for Insight.  It may be found online
+% at:
+%
+%     http://www.itk.org/
+
+\documentclass{InsightArticle}
+
+\usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{minted}
+\definecolor{ltgray}{rgb}{0.93,0.93,0.93}
+\usemintedstyle{emacs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  hyperref should be the last package to be loaded.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[dvips,
+bookmarks,
+bookmarksopen,
+backref,
+colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
+]{hyperref}
+
+
+%  This is a template for Papers to the Insight Journal.
+%  It is comparable to a technical report format.
+
+% The title should be descriptive enough for people to be able to find
+% the relevant document.
+\title{N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit}
+
+%
+% NOTE: This is the last number of the "handle" URL that
+% The Insight Journal assigns to your paper as part of the
+% submission process. Please replace the number "1338" with
+% the actual handle number that you get assigned.
+%
+\newcommand{\IJhandlerIDnumber}{3573}
+
+% Increment the release number whenever significant changes are made.
+% The author and/or editor can define 'significant' however they like.
+\release{1.0.0}
+
+% At minimum, give your name and an email address.  You can include a
+% snail-mail address if you like.
+\author{Matthew McCormick$^{1}$}
+\authoraddress{$^{1}$Kitware, Inc.}
+
+\begin{document}
+
+%
+% Add hyperlink to the web location and license of the paper.
+% The argument of this command is the handler identifier given
+% by the Insight Journal to this paper.
+%
+\IJhandlefooter{\IJhandlerIDnumber}
+
+
+\ifpdf
+\else
+   %
+   % Commands for including Graphics when using latex
+   %
+   \DeclareGraphicsExtensions{.eps,.jpg,.gif,.tiff,.bmp,.png}
+   \DeclareGraphicsRule{.jpg}{eps}{.jpg.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.gif}{eps}{.gif.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.tiff}{eps}{.tiff.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.bmp}{eps}{.bmp.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.png}{eps}{.png.bb}{`convert #1 eps:-}
+\fi
+
+
+\maketitle
+
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+
+% The abstract should be a paragraph or two long, and describe the
+% scope of the document.
+\begin{abstract}
+\noindent
+Strain quantifies local deformation of a solid body. In medical imaging,
+strain reflects how tissue deforms under load. Or, it can quantify growth or
+atrophy of tissue, such as the growth of a tumor. Additionally, strain from the
+transformation that results from image-to-image registration can be applied as
+an input to a biomechanical constitutive model.
+
+This document describes N-dimensional computation of strain tensor images in
+the Insight Toolkit (ITK), \url{www.itk.org}. Two filters are described. The
+first filter computes a strain tensor image from a displacement field image.
+The second filter computes a strain tensor image from a general spatial
+transform. In both cases, infinitesimal, Green-Lagrangian, or Eulerian-Almansi
+strain can be generated.
+
+This paper is accompanied with the source code, input data, parameters and
+output data that the authors used for validating the algorithm described in
+this paper. This adheres to the fundamental principle that scientific
+publications must facilitate reproducibility of the reported results.
+
+\end{abstract}
+
+\IJhandlenote{\IJhandlerIDnumber}
+
+\tableofcontents
+
+\section{Background}
+
+The result of image registration is a spatial transformation, which is sometimes
+non-rigid. A spatial transformation's local deformation is quantified with
+the \textit{strain tensor}. When registration is performed on images from multiple
+time points, strain is a measure of local tissue growth or atrophy. For
+example, strain can quantify the growth of a tumor or atrophy of cerebral gray
+matter. When registration is performed on tissues images experiencing
+mechanical stimulation, strain quantifies the amount of local
+deformation imparted on the tissue. For instance, compression and tension of
+arterial plaque can be quantified from images of the arteries at multiple
+points in the cardiac cycle. Finally, when combined with stress in a
+constitutive model, the inverse problem can be solved to determined tissue
+viscoelasticity. For example, stiffness of a cirrhotic liver can be imaged.
+
+Strain is a symmetric second rank tensor. \textit{Infinitesimal strain}, also
+called Cauchy's strain, linear strain, engineering strain, or small strain, is a
+first order approximation to the Green-Lagrangian or Eulerian-Almansi strain
+tensors. It is computed from the \textit{deformation gradient},
+$\mathbf{F}$, as\cite{WikipediaStrainTheory}
+
+\begin{equation}
+  \mathbf{\varepsilon}=\frac{1}{2}\left(\mathbf{F}^T+\mathbf{F}\right)-\mathbf{I}
+\end{equation}
+
+In tensor notation and for three dimensions,
+
+\begin{equation}
+\begin{aligned}
+\varepsilon_{ij} &= \frac{1}{2}\left(u_{i,j}+u_{j,i}\right)  \\
+&=
+\left[\begin{matrix}
+\varepsilon_{11} & \varepsilon_{12} & \varepsilon_{13} \\
+   \varepsilon_{21} & \varepsilon_{22} & \varepsilon_{23} \\
+   \varepsilon_{31} & \varepsilon_{32} & \varepsilon_{33} \\
+  \end{matrix}\right] \\
+&=
+\left[\begin{matrix}
+  \frac{\partial u_1}{\partial x_1} & \frac{1}{2} \left(\frac{\partial u_1}{\partial x_2}+\frac{\partial u_2}{\partial x_1}\right) & \frac{1}{2} \left(\frac{\partial u_1}{\partial x_3}+\frac{\partial u_3}{\partial x_1}\right) \\
+   \frac{1}{2} \left(\frac{\partial u_2}{\partial x_1}+\frac{\partial u_1}{\partial x_2}\right) & \frac{\partial u_2}{\partial x_2} & \frac{1}{2} \left(\frac{\partial u_2}{\partial x_3}+\frac{\partial u_3}{\partial x_2}\right) \\
+   \frac{1}{2} \left(\frac{\partial u_3}{\partial x_1}+\frac{\partial u_1}{\partial x_3}\right) & \frac{1}{2} \left(\frac{\partial u_3}{\partial x_2}+\frac{\partial u_2}{\partial x_3}\right) & \frac{\partial u_3}{\partial x_3} \\
+  \end{matrix}\right]
+\end{aligned}
+\end{equation}
+
+The \textit{Green-Lagrangian} strain tensor, where displacement derivatives are
+taken with respect to material coordinates, is,
+
+\begin{equation}
+\mathbf{E} = {1 \over 2} \left( \mathbf{F}^T \cdot \mathbf{F} - \mathbf{I} \right)
+\end{equation}
+
+or
+
+\begin{equation}
+E_{ij} = {1 \over 2} \left( {\partial \, u_i \over \partial X_j} + {\partial \, u_j \over \partial X_i} +
+                         {\partial \, u_k \over \partial X_i} {\partial \, u_k \over \partial X_j} \right)
+\end{equation}
+
+The \textit{Eulerian-Almansi} strain tensor, where displacement derivatives are
+taken with respect to spatial coordinates, is,
+
+\begin{equation}
+\mathbf{e} = {1 \over 2} \left( \mathbf{F} \cdot \mathbf{F}^T - \mathbf{I} \right)
+\end{equation}
+
+or
+
+\begin{equation}
+e_{ij} = {1 \over 2} \left( {\partial \, u_i \over \partial x_j} + {\partial \, u_j \over \partial x_i} -
+                         {\partial \, u_k \over \partial x_i} {\partial \, u_k \over \partial x_j} \right)
+\end{equation}
+
+Green-Lagrangian and Eulerian-Almansi are true mathematical tensors, i.e.
+they are invariant to translations or rotations of the coordinate system.
+
+This article describes implementations of N-dimensional strain image filters
+for the Insight Toolkit (ITK).
+
+\section{Implementation}
+
+Two classes are available to compute a strain image; both output an
+\doxygen{Image} of \doxygen{SymmetricSecondRankTensor}'s.
+
+The \code{itk::StrainImageFilter} takes a displacement field image as an input.
+Internally, it uses a gradient filter to compute gradients of the displacement
+field. The default gradient filter is the \doxygen{GradientImageFilter}, but a
+different filter can be specified by calling \code{SetGradientFilter()}.
+Other possible gradient filters include
+\doxygen{GradientRecursiveGaussianImageFilter} and
+\doxygen{DifferenceOfGaussiansGradientImageFilter}.
+
+The \code{itk::TransformToStrainFilter} takes a \doxygen{Transform} as input an
+produces a strain tensor image as its output. The transform must implement its
+\code{ComputeJacobianWithRespectToPosition()} method. Similar results can be
+obtained by passing an arbitrary transform through the
+\doxygen{TransformToDisplacementFieldFilter} then the
+\code{itk::StrainImageFilter}.
+
+Whether infinitesimal, Green-Lagrangian, or Eulerian-Almansi, strain is
+computed can be specified with \code{SetStrainForm()} on either filter.
+
+
+\section{Examples}
+
+The following example illustrates how to instantiate and use an \code{itk::StrainImageFilter}.
+
+\begin{minted}[baselinestretch=1,fontsize=\footnotesize,linenos=false,bgcolor=ltgray]{cpp}
+#include "itkStrainImageFilter.h"
+
+[...]
+  const unsigned int Dimension = 2;
+  typedef float                                           PixelType;
+  typedef itk::Vector< PixelType, Dimension >             DisplacementVectorType;
+  typedef itk::Image< DisplacementVectorType, Dimension > InputImageType;
+
+  typedef itk::StrainImageFilter< InputImageType, PixelType, PixelType > FilterType;
+
+  FilterType::Pointer filter = FilterType::New();
+  filter->SetInput( displacementImage );
+  filter->SetStrainForm( FilterType::GREENLAGRANGIAN );
+
+  filter->Update();
+
+  typedef FilterType::OutputImageType TensorImageType;
+  TensorImageType strainTensorImage = filter->GetOutput();
+[...]
+\end{minted}
+
+The following example illustrates how to instantiate and use an
+\code{itk::StrainImageFilter}.
+
+\begin{minted}[baselinestretch=1,fontsize=\footnotesize,linenos=false,bgcolor=ltgray]{cpp}
+#include "itkTransformToStrainFilter.h"
+
+[...]
+  const unsigned int Dimension = 2;
+  typedef float                                                           PixelType;
+  typedef double                                                          CoordRepresentationType;
+  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension > TransformType;
+
+  typedef itk::TransformToStrainFilter< TransformType, PixelType, PixelType > TransformToStrainFilterType;
+
+  FilterType::Pointer filter = FilterType::New();
+  filter->SetStrainForm( FilterType::GREENLAGRANGIAN );
+
+  // Create output image information.
+  typedef TransformToStrainFilterType::SizeType SizeType;
+  SizeType size;
+  size.Fill( 20 );
+  filter->SetSize( size );
+
+  typedef TransformToStrainFilterType::SpacingType SpacingType;
+  SpacingType spacing;
+  spacing.Fill( 0.7 );
+  filter->SetOutputSpacing( spacing );
+
+  typedef TransformToStrainFilterType::PointType OriginType;
+  OriginType origin;
+  origin.Fill( -10.0 );
+  filter->SetOutputOrigin( origin );
+
+  filter->SetInput( inputTransform );
+
+  filter->Update();
+
+  typedef FilterType::OutputImageType TensorImageType;
+  TensorImageType strainTensorImage = filter->GetOutput();
+[...]
+\end{minted}
+
+For additional information on the interface and how to apply it, see the
+class' Doxygen documentation and module tests.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Insert the bibliography using BibTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{InsightJournal}
+
+
+\end{document}
+

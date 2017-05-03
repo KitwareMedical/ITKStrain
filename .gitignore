@@ -1,0 +1,11 @@
+doc/*.aux
+doc/*.bbl
+doc/*.blg
+doc/*.brf
+doc/*.dvi
+doc/*.log
+doc/*.pdf
+doc/*.ps
+doc/*.toc
+doc/*.out
+doc/_minted-ITKStrain/
