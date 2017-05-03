@@ -87,7 +87,7 @@ public:
    * engineering strain, which is appropriate for small strains, Green-Lagrangian,
    * which uses a material reference system, and Eulerian-Almansi, which uses a
    * spatial reference system.  This is set with SetStrainForm(). */
-  enum StrainFormType {INFINITESIMAL, GREENLAGRANGIAN, EULERIANALMANSI};
+  enum StrainFormType {INFINITESIMAL = 0, GREENLAGRANGIAN = 1, EULERIANALMANSI = 2};
 
   itkSetMacro( StrainForm, StrainFormType );
   itkGetConstMacro( StrainForm, StrainFormType );
