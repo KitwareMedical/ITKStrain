@@ -8,3 +8,4 @@ doc/*.pdf
 doc/*.ps
 doc/*.toc
 doc/*.out
+doc/_minted-ITKStrain/

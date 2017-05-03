@@ -9,6 +9,10 @@
 \documentclass{InsightArticle}
 
 \usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{minted}
+\definecolor{ltgray}{rgb}{0.93,0.93,0.93}
+\usemintedstyle{emacs}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -109,13 +113,13 @@ publications must facilitate reproducibility of the reported results.
 
 \section{Background}
 
-The result of image registration is a spatial transformation that is sometimes
-non-rigid. The spatial transformation's local deformation is quantified with
-the \textit{strain tensor}. When registration occurs on images from multiple
+The result of image registration is a spatial transformation, which is sometimes
+non-rigid. A spatial transformation's local deformation is quantified with
+the \textit{strain tensor}. When registration is performed on images from multiple
 time points, strain is a measure of local tissue growth or atrophy. For
 example, strain can quantify the growth of a tumor or atrophy of cerebral gray
-matter. When registration occurs on images of the same tissue that experience
-mechanical stimulation, local strain quantifies the amount of local
+matter. When registration is performed on tissues images experiencing
+mechanical stimulation, strain quantifies the amount of local
 deformation imparted on the tissue. For instance, compression and tension of
 arterial plaque can be quantified from images of the arteries at multiple
 points in the cardiac cycle. Finally, when combined with stress in a
@@ -132,7 +136,7 @@ $\mathbf{F}$, as\cite{WikipediaStrainTheory}
   \mathbf{\varepsilon}=\frac{1}{2}\left(\mathbf{F}^T+\mathbf{F}\right)-\mathbf{I}
 \end{equation}
 
-In tensor notation,
+In tensor notation and for three dimensions,
 
 \begin{equation}
 \begin{aligned}
@@ -153,7 +157,7 @@ In tensor notation,
 \end{equation}
 
 The \textit{Green-Lagrangian} strain tensor, where displacement derivatives are
-with respect to material coordinates, is,
+taken with respect to material coordinates, is,
 
 \begin{equation}
 \mathbf{E} = {1 \over 2} \left( \mathbf{F}^T \cdot \mathbf{F} - \mathbf{I} \right)
@@ -167,7 +171,7 @@ E_{ij} = {1 \over 2} \left( {\partial \, u_i \over \partial X_j} + {\partial \, 
 \end{equation}
 
 The \textit{Eulerian-Almansi} strain tensor, where displacement derivatives are
-with respect to spatial coordinates, is,
+taken with respect to spatial coordinates, is,
 
 \begin{equation}
 \mathbf{e} = {1 \over 2} \left( \mathbf{F} \cdot \mathbf{F}^T - \mathbf{I} \right)
@@ -176,103 +180,110 @@ with respect to spatial coordinates, is,
 or
 
 \begin{equation}
-e_{ij} = {1 \over 2} \left( {\partial \, U_i \over \partial x_j} + {\partial \, U_j \over \partial x_i} +
-                         {\partial \, U_k \over \partial x_i} {\partial \, U_k \over \partial x_j} \right)
+e_{ij} = {1 \over 2} \left( {\partial \, u_i \over \partial x_j} + {\partial \, u_j \over \partial x_i} -
+                         {\partial \, u_k \over \partial x_i} {\partial \, u_k \over \partial x_j} \right)
 \end{equation}
 
-Green-Lagrangian and Eulerian-Almansi are true mathematical tensors, i.e.,
+Green-Lagrangian and Eulerian-Almansi are true mathematical tensors, i.e.
 they are invariant to translations or rotations of the coordinate system.
+
+This article describes implementations of N-dimensional strain image filters
+for the Insight Toolkit (ITK).
 
 \section{Implementation}
 
-The format of this LaTeX file, allows authors to include code snippets, like
-the following
+Two classes are available to compute a strain image; both output an
+\doxygen{Image} of \doxygen{SymmetricSecondRankTensor}'s.
 
-\small
-\begin{verbatim}
-typedef itk::Image< unsigned char, 3 > ImageType;
+The \code{itk::StrainImageFilter} takes a displacement field image as an input.
+Internally, it uses a gradient filter to compute gradients of the displacement
+field. The default gradient filter is the \doxygen{GradientImageFilter}, but a
+different filter can be specified by calling \code{SetGradientFilter()}.
+Other possible gradient filters include
+\doxygen{GradientRecursiveGaussianImageFilter} and
+\doxygen{DifferenceOfGaussiansGradientImageFilter}.
 
-ImageType::Pointer image = ImageType::New();
-\end{verbatim}
-\normalsize
+The \code{itk::TransformToStrainFilter} takes a \doxygen{Transform} as input an
+produces a strain tensor image as its output. The tranform must implement its
+\code{ComputeJacobianWithRespectToPosition()} method. Similar results can be
+obtained by passing an arbitrary transform through the
+\doxygen{TransformToDisplacementFieldFilter} then the
+\code{itk::StrainImageFilter}.
 
-and to cite the online documentation of the Insitght Toolkit, for example, the
-link to the doxygen documentation of the ImageToImageFilter
-
-\doxygen{ImageToImageFilter}
-
-LaTeX macros are also available for typesetting code in familiar courier fonts.
-Like the following method of an ITK class.
-
-\code{SetNumberOfIterations()}
-
-
-
-% The preceding sections will have been written in a gentler,
-% introductory style.  You may also wish to include a reference
-% section, documenting all the functions/exceptions/constants.
-% Often, these will be placed in separate files and input like this:
+Whether infinitesimal, Green-Lagrangian, or Eulerian-Almansi, strain is
+computed can be specified with \code{SetStrainForm()} on either filter.
 
 
+\section{Examples}
 
-\appendix
+The following example illustrates how to instantiate and use an \code{itk::StrainImageFilter}.
 
-\section{This is an Appendix}
+\begin{minted}[baselinestretch=1,fontsize=\footnotesize,linenos=false,bgcolor=ltgray]{cpp}
+#include "itkStrainImageFilter.h"
 
-To create an appendix in a Insight HOWTO document, use markup like
-this:
+[...]
+  const unsigned int Dimension = 2;
+  typedef float                                           PixelType;
+  typedef itk::Vector< PixelType, Dimension >             DisplacementVectorType;
+  typedef itk::Image< DisplacementVectorType, Dimension > InputImageType;
 
-\begin{verbatim}
-\appendix
+  typedef itk::StrainImageFilter< InputImageType, PixelType, PixelType > FilterType;
 
-\section{This is an Appendix}
+  FilterType::Pointer filter = FilterType::New();
+  filter->SetInput( displacementImage );
+  filter->SetStrainForm( FilterType::GREENLAGRANGIAN );
 
-To create an appendix in a Insight HOWTO document, ....
+  filter->Update();
 
+  typedef FilterType::OutputImageType TensorImageType;
+  TensorImageType strainTensorImage = filter->GetOutput();
+[...]
+\end{minted}
 
-\section{This is another}
+The following example illustrates how to instantiate and use an
+\code{itk::StrainImageFilter}.
 
-Just add another \section{}, but don't say \appendix again.
-\end{verbatim}
+\begin{minted}[baselinestretch=1,fontsize=\footnotesize,linenos=false,bgcolor=ltgray]{cpp}
+#include "itkTransformToStrainFilter.h"
 
+[...]
+  const unsigned int Dimension = 2;
+  typedef float                                                           PixelType;
+  typedef double                                                          CoordRepresentationType;
+  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension > TransformType;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  Example on how to insert a figure
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  typedef itk::TransformToStrainFilter< TransformType, PixelType, PixelType > TransformToStrainFilterType;
 
-\begin{figure}
-\center
-\includegraphics[width=0.8\textwidth]{RegistrationComponentsDiagram.eps}
-\itkcaption[Registration Framework Components]{The basic components of the
-registration framework are two input images, a transform, a metric, an
-interpolator and an optimizer.}
-\label{fig:RegistrationComponents}
-\end{figure}
+  FilterType::Pointer filter = FilterType::New();
+  filter->SetStrainForm( FilterType::GREENLAGRANGIAN );
 
+  // Create output image information.
+  typedef TransformToStrainFilterType::SizeType SizeType;
+  SizeType size;
+  size.Fill( 20 );
+  filter->SetSize( size );
 
+  typedef TransformToStrainFilterType::SpacingType SpacingType;
+  SpacingType spacing;
+  spacing.Fill( 0.7 );
+  filter->SetOutputSpacing( spacing );
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  Example on how to insert an equation.
-%  Never forget to put an equation in your paper.
-%  They make them look professional and impress the reviewers.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  typedef TransformToStrainFilterType::PointType OriginType;
+  OriginType origin;
+  origin.Fill( -10.0 );
+  filter->SetOutputOrigin( origin );
 
+  filter->SetInput( inputTransform );
 
-To support shape-guidance, the generic level set equation
-(Eqn(~\ref{eqn:ShapeInfluenceTerm})) is extended to incorporate a shape guidance
-term:
+  filter->Update();
 
-\begin{equation}
-\label{eqn:ShapeInfluenceTerm}
-\xi \left(\psi^{*}(\mathbf{x}) - \psi(\mathbf{x})\right)
-\end{equation}
+  typedef FilterType::OutputImageType TensorImageType;
+  TensorImageType strainTensorImage = filter->GetOutput();
+[...]
+\end{minted}
 
-
-
+For additional information on the interface and how to apply it, see the
+class' Doxygen documentation and module tests.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
