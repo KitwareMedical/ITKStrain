@@ -22,33 +22,70 @@
 #include "itkImageFileWriter.h"
 #include "itkTransformToDisplacementFieldFilter.h"
 #include "itkStrainImageFilter.h"
+#include "itkTestingMacros.h"
 
 int itkTransformToStrainFilterTest( int argc, char * argv [] )
 {
-  /** Check command line arguments. */
+  // Check command line arguments.
   if( argc < 6 )
     {
-    std::cerr << "Usage: ";
-    std::cerr << argv[0] << "<strainForm> <transformName> <strainFieldFileName> <displacementField> <displacementFieldStrain> [bSplineParametersFile]" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << argv[0];
+    std::cerr << "strainForm"
+      << " transformName"
+      << " strainFieldFileName"
+      << " displacementField"
+      << " displacementFieldStrain"
+      << " [bSplineParametersFile]" << std::endl;
     return EXIT_FAILURE;
     }
 
 
-  int strainForm = 0;
-  if( ! strcmp( argv[1], "INFINITESIMAL" ) )
+  // Typedefs.
+  const unsigned int  Dimension = 2;
+  typedef float       ScalarPixelType;
+  typedef double      CoordRepresentationType;
+  const unsigned int  SplineOrder = 3;
+
+  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension >
+    TransformType;
+  typedef TransformType::ParametersType ParametersType;
+
+  typedef itk::TransformToStrainFilter< TransformType, ScalarPixelType, ScalarPixelType >
+    TransformToStrainFilterType;
+
+  TransformToStrainFilterType::Pointer transformToStrainFilter =
+    TransformToStrainFilterType::New();
+
+  EXERCISE_BASIC_OBJECT_METHODS( transformToStrainFilter,
+    TransformToStrainFilter, GenerateImageSource );
+
+
+  // Test the unknown strain form exception
+  int strainForm = -1;
+
+  transformToStrainFilter->SetStrainForm(
+    static_cast< TransformToStrainFilterType::StrainFormType >( strainForm ) );
+
+  TRY_EXPECT_EXCEPTION( transformToStrainFilter->Update() );
+
+
+  // Get the input strain form
+  if( !strcmp( argv[1], "INFINITESIMAL" ) )
     {
     strainForm = 0;
     }
-  else if( ! strcmp( argv[1], "GREENLAGRANGIAN" ) )
+  else if( !strcmp( argv[1], "GREENLAGRANGIAN" ) )
     {
     strainForm = 1;
     }
-  else if( ! strcmp( argv[1], "EULERIANALMANSI" ) )
+  else if( !strcmp( argv[1], "EULERIANALMANSI" ) )
     {
     strainForm = 2;
     }
   else
     {
+    std::cerr << "Test failed!" << std::endl;
     std::cerr << "Unknown strain form: " << argv[1] << std::endl;
     return EXIT_FAILURE;
     }
@@ -63,18 +100,12 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
     bSplineParametersFile = argv[6];
     }
 
-  /** Typedefs. */
-  const unsigned int  Dimension = 2;
-  typedef float       ScalarPixelType;
-  typedef double      CoordRepresentationType;
-  const unsigned int  SplineOrder = 3;
+  transformToStrainFilter->SetStrainForm(
+    static_cast< TransformToStrainFilterType::StrainFormType >( strainForm ) );
+  TEST_SET_GET_VALUE(
+    static_cast< TransformToStrainFilterType::StrainFormType >( strainForm ),
+    transformToStrainFilter->GetStrainForm() );
 
-  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension >                                                        TransformType;
-  typedef TransformType::ParametersType                                                                                          ParametersType;
-
-  typedef itk::TransformToStrainFilter< TransformType, ScalarPixelType, ScalarPixelType > TransformToStrainFilterType;
-  TransformToStrainFilterType::Pointer transformToStrainFilter = TransformToStrainFilterType::New();
-  transformToStrainFilter->SetStrainForm( static_cast< TransformToStrainFilterType::StrainFormType >( strainForm ) );
 
   // Create output information.
   typedef TransformToStrainFilterType::SizeType SizeType;
@@ -94,20 +125,32 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
   // field.
   typedef itk::Vector< ScalarPixelType, Dimension > DisplacementVectorType;
   typedef itk::Image< DisplacementVectorType, Dimension > DisplacementFieldType;
-  typedef itk::TransformToDisplacementFieldFilter< DisplacementFieldType, CoordRepresentationType > TransformToDisplacementFilterType;
-  TransformToDisplacementFilterType::Pointer transformToDisplacement = TransformToDisplacementFilterType::New();
+
+  typedef itk::TransformToDisplacementFieldFilter< DisplacementFieldType, CoordRepresentationType >
+    TransformToDisplacementFilterType;
+  TransformToDisplacementFilterType::Pointer transformToDisplacement = 
+    TransformToDisplacementFilterType::New();
 
   // Create transforms.
-  typedef itk::AffineTransform< CoordRepresentationType, Dimension >                                                             AffineTransformType;
+  typedef itk::AffineTransform< CoordRepresentationType, Dimension >
+    AffineTransformType;
   AffineTransformType::Pointer affineTransform = AffineTransformType::New();
-  typedef itk::BSplineTransform< CoordRepresentationType, Dimension, SplineOrder >                         BSplineTransformType;
+
+  typedef itk::BSplineTransform< CoordRepresentationType, Dimension, SplineOrder >
+    BSplineTransformType;
   BSplineTransformType::Pointer bSplineTransform = BSplineTransformType::New();
-  typedef itk::Similarity2DTransform< CoordRepresentationType > SimilarityTransformType;
-  SimilarityTransformType::Pointer similarityTransform = SimilarityTransformType::New();
+
+  typedef itk::Similarity2DTransform< CoordRepresentationType >
+    SimilarityTransformType;
+  SimilarityTransformType::Pointer similarityTransform =
+    SimilarityTransformType::New();
 
   if( transformName == "Similarity" )
     {
     transformToStrainFilter->SetTransform( similarityTransform.GetPointer() );
+    TEST_SET_GET_VALUE( similarityTransform.GetPointer(),
+      transformToStrainFilter->GetTransform() );
+
     transformToDisplacement->SetTransform( similarityTransform.GetPointer() );
 
     SimilarityTransformType::OffsetType translation;
@@ -121,12 +164,15 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
   else if( transformName == "Affine" )
     {
     transformToStrainFilter->SetTransform( affineTransform.GetPointer() );
+    TEST_SET_GET_VALUE( affineTransform.GetPointer(),
+      transformToStrainFilter->GetTransform() );
+
     transformToDisplacement->SetTransform( affineTransform.GetPointer() );
 
     // Set the options.
     OriginType centerOfRotation;
-    centerOfRotation[ 0 ] = -3.0;
-    centerOfRotation[ 1 ] = -3.0;
+    centerOfRotation[0] = -3.0;
+    centerOfRotation[1] = -3.0;
     affineTransform->SetCenter( centerOfRotation );
 
     // Create and set parameters.
@@ -137,20 +183,22 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
     //parameters[ 3 ] =   0.9;
     //parameters[ 4 ] =  10.3;
     //parameters[ 5 ] = -33.8;
-    parameters[ 0 ] =   1.1;
-    parameters[ 1 ] =   0.3;
-    parameters[ 2 ] =   0.3;
-    parameters[ 3 ] =   1.2;
-    parameters[ 4 ] =  0.0;
-    parameters[ 5 ] = 0.0;
+    parameters[0] = 1.1;
+    parameters[1] = 0.3;
+    parameters[2] = 0.3;
+    parameters[3] = 1.2;
+    parameters[4] = 0.0;
+    parameters[5] = 0.0;
     affineTransform->SetParameters( parameters );
     }
   else if( transformName == "BSpline" )
     {
     transformToStrainFilter->SetTransform( bSplineTransform );
+    TEST_SET_GET_VALUE( bSplineTransform, transformToStrainFilter->GetTransform() );
+
     transformToDisplacement->SetTransform( bSplineTransform );
 
-    /* Set the options. */
+    // Set the options.
     BSplineTransformType::PhysicalDimensionsType dimensions;
     for( unsigned int dd = 0; dd < Dimension; ++dd )
       {
@@ -181,89 +229,66 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
       }
     else
       {
-      std::cerr << "ERROR: B-spline parameter file not found." << std::endl;
+      std::cerr << "Test failed!" << std::endl;
+      std::cerr << "Error: B-Spline parameter file not found." << std::endl;
       return EXIT_FAILURE;
       }
     bSplineTransform->SetParametersByValue( parameters );
     }
   else
     {
-    std::cerr << "Error: Not a valid transform name." << std::endl;
+    std::cerr << "Test failed!" << std::endl;
+    std::cerr << "Error: Not a valid transform name: " << transformName
+      << std::endl;
     return EXIT_FAILURE;
     }
 
   // Create and setup strain field generator.
-  std::cout << "Name of Class: " << transformToStrainFilter->GetNameOfClass() << std::endl;
   transformToStrainFilter->SetSize( size );
-  transformToStrainFilter->SetSpacing( spacing );
-  transformToStrainFilter->SetOrigin( origin );
-  transformToStrainFilter->SetStrainForm( static_cast< TransformToStrainFilterType::StrainFormType >( strainForm ) );
+  TEST_SET_GET_VALUE( size, transformToStrainFilter->GetSize() );
 
-  // for coverage, exercise access methods
-  spacing = transformToStrainFilter->GetSpacing();
-  origin = transformToStrainFilter->GetOrigin();
-  TransformToStrainFilterType::DirectionType direction = transformToStrainFilter->GetDirection();
-  transformToStrainFilter->SetDirection( direction );
-  std::cout << "Spacing   " << spacing << std::endl
-            << "Origin    " << origin << std::endl
-            << "Direction \n" << direction << std::endl;
-  std::cout << "Transform: " << std::endl;
-  transformToStrainFilter->GetTransform()->Print( std::cout );
+  transformToStrainFilter->SetSpacing( spacing );
+  TEST_SET_GET_VALUE( spacing, transformToStrainFilter->GetSpacing() );
+
+  transformToStrainFilter->SetOrigin( origin );
+  TEST_SET_GET_VALUE( origin, transformToStrainFilter->GetOrigin() );
+
 
   transformToDisplacement->SetSize( size );
   transformToDisplacement->SetOutputSpacing( spacing );
   transformToDisplacement->SetOutputOrigin( origin );
 
   // Write strain field to disk.
-  typedef itk::ImageFileWriter< TransformToStrainFilterType::OutputImageType > WriterType;
+  typedef itk::ImageFileWriter< TransformToStrainFilterType::OutputImageType >
+    WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput( transformToStrainFilter->GetOutput() );
   writer->SetFileName( strainFieldFileName );
 
-  try
-    {
-    writer->Update();
-    }
-  catch ( itk::ExceptionObject & err )
-    {
-    std::cerr << "Exception detected while generating strain field" << strainFieldFileName << std::endl;
-    std::cerr << " : "  << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
+
 
   // Write strain computed from the displacement field.
-  typedef itk::StrainImageFilter< DisplacementFieldType, CoordRepresentationType > StrainImageFilterType;
+  typedef itk::StrainImageFilter< DisplacementFieldType, CoordRepresentationType >
+    StrainImageFilterType;
   StrainImageFilterType::Pointer strainImageFilter = StrainImageFilterType::New();
   strainImageFilter->SetInput( transformToDisplacement->GetOutput() );
-  strainImageFilter->SetStrainForm( static_cast< StrainImageFilterType::StrainFormType >( strainForm ) );
+  strainImageFilter->SetStrainForm(
+    static_cast< StrainImageFilterType::StrainFormType >( strainForm ) );
   writer->SetInput( strainImageFilter->GetOutput() );
   writer->SetFileName( displacementFieldStrainFileName );
 
-  try
-    {
-    writer->Update();
-    }
-  catch ( itk::ExceptionObject & err )
-    {
-    std::cerr << "Exception detected while writing strain field" << displacementFieldStrainFileName << std::endl;
-    std::cerr << " : "  << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  TRY_EXPECT_NO_EXCEPTION( writer->Update() );
+
 
   typedef itk::ImageFileWriter< DisplacementFieldType > DisplacementWriterType;
   DisplacementWriterType::Pointer displacementWriter = DisplacementWriterType::New();
   displacementWriter->SetFileName( displacementFieldFileName );
   displacementWriter->SetInput( transformToDisplacement->GetOutput() );
-  try
-    {
-    displacementWriter->Update();
-    }
-  catch ( itk::ExceptionObject & err )
-    {
-    std::cerr << "Exception detected while writing strain field" << displacementFieldStrainFileName << std::endl;
-    std::cerr << " : "  << err << std::endl;
-    return EXIT_FAILURE;
-    }
 
+  TRY_EXPECT_NO_EXCEPTION( displacementWriter->Update() );
+
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }
