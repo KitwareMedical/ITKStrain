@@ -30,6 +30,7 @@ namespace itk
 template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
 StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
 ::StrainImageFilter():
+  m_InputComponentsFilter( InputComponentsImageFilterType::New() ),
   m_StrainForm( INFINITESIMAL )
 {
   // The first output is only of interest to the user.  The rest of the outputs
@@ -41,15 +42,10 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
     this->SetNthOutput( i, GradientOutputImageType::New().GetPointer() );
     }
 
-  this->m_InputComponentsFilter = InputComponentsImageFilterType::New();
-
   typedef GradientImageFilter< OperatorImageType, TOperatorValueType, TOperatorValueType >
     GradientImageFilterType;
-  this->m_GradientFilter   = GradientImageFilterType::New().GetPointer();
-
-  this->m_VectorGradientFilter = NULL;
+  this->m_GradientFilter = GradientImageFilterType::New().GetPointer();
 }
-
 
 template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
 void
@@ -90,7 +86,6 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
   OutputImageType * output = this->GetOutput();
   output->FillBuffer( NumericTraits< OutputPixelType >::Zero );
 }
-
 
 template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
 void
@@ -141,8 +136,7 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
       ImageRegionConstIterator< GradientOutputImageType >
         gradientIt( reinterpret_cast< GradientOutputImageType* >(
             dynamic_cast< GradientOutputImageType* >(
-              this->ProcessObject::GetOutput( i + 1 ) ) )
-          , region );
+              this->ProcessObject::GetOutput( i + 1 ) ) ), region );
       for( outputIt.GoToBegin(), gradientIt.GoToBegin();
            !gradientIt.IsAtEnd();
            ++outputIt, ++gradientIt )
@@ -191,6 +185,23 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
     }
 }
 
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
+void
+StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
+::PrintSelf( std::ostream & os, Indent indent ) const
+{
+  Superclass::PrintSelf( os, indent );
+
+  itkPrintSelfObjectMacro( InputComponentsFilter );
+
+  itkPrintSelfObjectMacro( GradientFilter );
+
+  itkPrintSelfObjectMacro( VectorGradientFilter );
+
+  os << indent << "StrainForm: "
+    << static_cast< typename NumericTraits< StrainFormType >::PrintType >( m_StrainForm )
+    << std::endl;
+}
 } // end namespace itk
 
 #endif
