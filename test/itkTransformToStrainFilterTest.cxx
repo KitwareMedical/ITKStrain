@@ -47,9 +47,8 @@ int itkTransformToStrainFilterTest( int argc, char * argv [] )
   typedef double      CoordRepresentationType;
   const unsigned int  SplineOrder = 3;
 
-  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension >
-    TransformType;
-  typedef TransformType::ParametersType ParametersType;
+  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension > TransformType;
+  typedef TransformType::ParametersType                                   ParametersType;
 
   typedef itk::TransformToStrainFilter< TransformType, ScalarPixelType, ScalarPixelType >
     TransformToStrainFilterType;
