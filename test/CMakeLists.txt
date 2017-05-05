@@ -2,8 +2,6 @@ itk_module_test()
 
 set(StrainTests
   itkStrainImageFilterTest.cxx
-  itkStrainImageFilterLagrangianTest.cxx
-  itkStrainImageFilterEulerianTest.cxx
   itkStrainImageFilterDoGTest.cxx
   itkStrainImageFilterRecursiveGaussianTest.cxx
   itkTransformToStrainFilterTest.cxx
@@ -11,29 +9,23 @@ set(StrainTests
 
 CreateTestDriver(Strain "${Strain-Test_LIBRARIES}" "${StrainTests}")
 
-itk_add_test(NAME itkStrainImageFilterTest
+itk_add_test(NAME itkStrainImageFilterInfinitesimalTest
   COMMAND StrainTestDriver
   --compare DATA{Baseline/LineLoadStrain.mha}
             ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterTestOutput.vtk
-  itkStrainImageFilterTest
-    DATA{Input/LineLoadDisplacement.mha}
-    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterTest)
+  itkStrainImageFilterTest DATA{Input/LineLoadDisplacement.mha} ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterTest "INFINITESIMAL" )
 
 itk_add_test(NAME itkStrainImageFilterLagrangianTest
   COMMAND StrainTestDriver
   --compare DATA{Baseline/LineLoadStrain.mha}
-    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterLagrangianTestOutput.vtk
-  itkStrainImageFilterLagrangianTest
-    DATA{Input/LineLoadDisplacement.mha}
-    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterLagrangianTest)
+            ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterLagrangianTestOutput.vtk
+  itkStrainImageFilterTest DATA{Input/LineLoadDisplacement.mha} ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterLagrangianTest "GREENLAGRANGIAN" )
 
 itk_add_test(NAME itkStrainImageFilterEulerianTest
   COMMAND StrainTestDriver
   --compare DATA{Baseline/LineLoadStrain.mha}
-    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterEulerianTestOutput.vtk
-  itkStrainImageFilterEulerianTest
-    DATA{Input/LineLoadDisplacement.mha}
-    ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterEulerianTest)
+            ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterEulerianTestOutput.vtk
+  itkStrainImageFilterTest DATA{Input/LineLoadDisplacement.mha} ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterEulerianTest "EULERIANALMANSI" )
 
 itk_add_test(NAME itkStrainImageFilterDoGTest
   COMMAND StrainTestDriver
@@ -52,7 +44,7 @@ itk_add_test(NAME itkStrainImageFilterRecursiveGaussianTest
     ${ITK_TEST_OUTPUT_DIR}/itkStrainImageFilterRecursiveGaussianTest)
 
 # BSplineTransform has not yet implemented
-# ComputeJacobianWithRespectToPosition :-(
+# ComputeJacobianWithRespectToPosition
 #itk_add_test(NAME itkTransformToStrainFilterTest
   #COMMAND StrainTestDriver
   #itkTransformToStrainFilterTest
