@@ -1,7 +1,7 @@
 ITKStrain
 =========
 
-This repository contains an `ITK <https://itk.org>`_ filters to estimate a
+This repository contains `ITK <https://itk.org>`_ filters to estimate a
 strain tensor field from a displacement field or a spatial transformation.
 
 For more information, see the `Insight Journal article <http://hdl.handle.net/10380/3573>`_::
