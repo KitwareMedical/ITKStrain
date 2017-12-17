@@ -97,10 +97,10 @@ protected:
 
   TransformToStrainFilter();
 
-  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
-  virtual void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId ) ITK_OVERRIDE;
 
-  virtual void PrintSelf ( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf ( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
 
 private:
   ITK_DISALLOW_COPY_AND_ASSIGN(TransformToStrainFilter);
