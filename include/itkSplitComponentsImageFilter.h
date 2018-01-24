@@ -85,14 +85,14 @@ public:
 
 protected:
   SplitComponentsImageFilter();
-  virtual ~SplitComponentsImageFilter() {}
+  ~SplitComponentsImageFilter() override {}
 
   /** Do not allocate outputs that we will not populate. */
-  virtual void AllocateOutputs();
+  void AllocateOutputs() override;
 
-  virtual void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId ) override;
 
-  virtual void PrintSelf ( std::ostream& os, Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf ( std::ostream& os, Indent indent ) const override;
 
 private:
   ITK_DISALLOW_COPY_AND_ASSIGN(SplitComponentsImageFilter);
