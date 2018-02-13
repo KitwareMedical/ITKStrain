@@ -37,7 +37,7 @@ int itkStrainImageFilterTest( int argc, char* argv[] )
   const char * inputDisplacementImageFileName = argv[1];
   const char * outputFileNamePrefix = argv[2];
 
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
   using PixelType = float;
   using DisplacementVectorType = itk::Vector< PixelType, Dimension >;
   using InputImageType = itk::Image< DisplacementVectorType, Dimension >;

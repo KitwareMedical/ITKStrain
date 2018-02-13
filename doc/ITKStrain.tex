@@ -222,7 +222,7 @@ The following example illustrates how to instantiate and use an \code{itk::Strai
 #include "itkStrainImageFilter.h"
 
 [...]
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
   using PixelType = float;
   using DisplacementVectorType = itk::Vector< PixelType, Dimension >;
   using InputImageType = itk::Image< DisplacementVectorType, Dimension >;
@@ -247,7 +247,7 @@ The following example illustrates how to instantiate and use an
 #include "itkTransformToStrainFilter.h"
 
 [...]
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
   using PixelType = float;
   using CoordRepresentationType = double;
   using TransformType = itk::Transform< CoordRepresentationType, Dimension, Dimension >;
