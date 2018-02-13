@@ -42,8 +42,7 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
     this->SetNthOutput( i, GradientOutputImageType::New().GetPointer() );
     }
 
-  typedef GradientImageFilter< OperatorImageType, TOperatorValueType, TOperatorValueType >
-    GradientImageFilterType;
+  using GradientImageFilterType = GradientImageFilter< OperatorImageType, TOperatorValueType, TOperatorValueType >;
   this->m_GradientFilter = GradientImageFilterType::New().GetPointer();
 }
 

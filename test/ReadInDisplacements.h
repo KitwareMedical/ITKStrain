@@ -24,9 +24,9 @@
 template< class TDisplacementImageType  >
 int ReadInDisplacements( const char * inputFile, typename TDisplacementImageType::Pointer & inputImage )
 {
-  typedef TDisplacementImageType InputImageType;
+  using InputImageType = TDisplacementImageType;
 
-  typedef itk::ImageFileReader< InputImageType > ReaderType;
+  using ReaderType = itk::ImageFileReader< InputImageType >;
   typename ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( inputFile );
 
