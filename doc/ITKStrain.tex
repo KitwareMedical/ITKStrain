@@ -223,11 +223,11 @@ The following example illustrates how to instantiate and use an \code{itk::Strai
 
 [...]
   const unsigned int Dimension = 2;
-  typedef float                                           PixelType;
-  typedef itk::Vector< PixelType, Dimension >             DisplacementVectorType;
-  typedef itk::Image< DisplacementVectorType, Dimension > InputImageType;
+  using PixelType = float;
+  using DisplacementVectorType = itk::Vector< PixelType, Dimension >;
+  using InputImageType = itk::Image< DisplacementVectorType, Dimension >;
 
-  typedef itk::StrainImageFilter< InputImageType, PixelType, PixelType > FilterType;
+  using FilterType = itk::StrainImageFilter< InputImageType, PixelType, PixelType >;
 
   FilterType::Pointer filter = FilterType::New();
   filter->SetInput( displacementImage );
@@ -235,7 +235,7 @@ The following example illustrates how to instantiate and use an \code{itk::Strai
 
   filter->Update();
 
-  typedef FilterType::OutputImageType TensorImageType;
+  using TensorImageType = FilterType::OutputImageType;
   TensorImageType strainTensorImage = filter->GetOutput();
 [...]
 \end{minted}
@@ -248,27 +248,27 @@ The following example illustrates how to instantiate and use an
 
 [...]
   const unsigned int Dimension = 2;
-  typedef float                                                           PixelType;
-  typedef double                                                          CoordRepresentationType;
-  typedef itk::Transform< CoordRepresentationType, Dimension, Dimension > TransformType;
+  using PixelType = float;
+  using CoordRepresentationType = double;
+  using TransformType = itk::Transform< CoordRepresentationType, Dimension, Dimension >;
 
-  typedef itk::TransformToStrainFilter< TransformType, PixelType, PixelType > TransformToStrainFilterType;
+  using TransformToStrainFilterType = itk::TransformToStrainFilter< TransformType, PixelType, PixelType >;
 
   FilterType::Pointer filter = FilterType::New();
   filter->SetStrainForm( FilterType::GREENLAGRANGIAN );
 
   // Create output image information.
-  typedef TransformToStrainFilterType::SizeType SizeType;
+  using SizeType = TransformToStrainFilterType::SizeType;
   SizeType size;
   size.Fill( 20 );
   filter->SetSize( size );
 
-  typedef TransformToStrainFilterType::SpacingType SpacingType;
+  using SpacingType = TransformToStrainFilterType::SpacingType;
   SpacingType spacing;
   spacing.Fill( 0.7 );
   filter->SetOutputSpacing( spacing );
 
-  typedef TransformToStrainFilterType::PointType OriginType;
+  using OriginType = TransformToStrainFilterType::PointType;
   OriginType origin;
   origin.Fill( -10.0 );
   filter->SetOutputOrigin( origin );
@@ -277,7 +277,7 @@ The following example illustrates how to instantiate and use an
 
   filter->Update();
 
-  typedef FilterType::OutputImageType TensorImageType;
+  using TensorImageType = FilterType::OutputImageType;
   TensorImageType strainTensorImage = filter->GetOutput();
 [...]
 \end{minted}

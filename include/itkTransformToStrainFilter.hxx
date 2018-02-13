@@ -64,7 +64,7 @@ TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
   const TransformType * input = this->GetTransform();
 
   OutputImageType * output = this->GetOutput();
-  typedef ImageRegionIteratorWithIndex< OutputImageType > ImageIteratorType;
+  using ImageIteratorType = ImageRegionIteratorWithIndex< OutputImageType >;
   ImageIteratorType outputIt( output, region );
 
   typename TransformType::JacobianType identity;
