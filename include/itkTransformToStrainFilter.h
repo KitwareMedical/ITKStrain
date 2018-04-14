@@ -56,6 +56,8 @@ class TransformToStrainFilter : public
                                   TTransform::InputSpaceDimension > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TransformToStrainFilter);
+
   /** ImageDimension enumeration. */
   static constexpr unsigned int ImageDimension = TTransform::InputSpaceDimension;
 
@@ -103,8 +105,6 @@ protected:
   void PrintSelf ( std::ostream& os, Indent indent ) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformToStrainFilter);
-
   StrainFormType m_StrainForm;
 };
 

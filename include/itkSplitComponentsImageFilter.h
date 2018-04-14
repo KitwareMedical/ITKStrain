@@ -49,6 +49,8 @@ class SplitComponentsImageFilter:
   public ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SplitComponentsImageFilter);
+
   /** ImageDimension enumeration. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
   /** Components enumeration. */
@@ -93,8 +95,6 @@ protected:
   void PrintSelf ( std::ostream& os, Indent indent ) const override;
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SplitComponentsImageFilter);
-
   ComponentsMaskType m_ComponentsMask;
 };
 
