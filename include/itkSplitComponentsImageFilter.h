@@ -90,7 +90,7 @@ protected:
   /** Do not allocate outputs that we will not populate. */
   void AllocateOutputs() override;
 
-  void ThreadedGenerateData( const OutputRegionType& outputRegion, ThreadIdType threadId ) override;
+  void DynamicThreadedGenerateData( const OutputRegionType& outputRegion ) override;
 
   void PrintSelf ( std::ostream& os, Indent indent ) const override;
 

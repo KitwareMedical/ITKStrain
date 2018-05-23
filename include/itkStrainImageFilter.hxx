@@ -44,6 +44,8 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
 
   using GradientImageFilterType = GradientImageFilter< OperatorImageType, TOperatorValueType, TOperatorValueType >;
   this->m_GradientFilter = GradientImageFilterType::New().GetPointer();
+
+  this->DynamicMultiThreadingOn();
 }
 
 template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
@@ -95,7 +97,7 @@ StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
 template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType >
 void
 StrainImageFilter< TInputImage, TOperatorValueType, TOutputValueType >
-::ThreadedGenerateData( const OutputRegionType& region, ThreadIdType itkNotUsed( threadId ) )
+::DynamicThreadedGenerateData( const OutputRegionType& region )
 {
   typename InputImageType::ConstPointer input = this->GetInput();
 
