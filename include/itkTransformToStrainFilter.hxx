@@ -30,6 +30,7 @@ TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
 ::TransformToStrainFilter():
   m_StrainForm( INFINITESIMAL )
 {
+  this->DynamicMultiThreadingOn();
 }
 
 template < typename TTransform, typename TOperatorValue,
@@ -58,8 +59,7 @@ template < typename TTransform, typename TOperatorValue,
            typename TOutputValue >
 void
 TransformToStrainFilter< TTransform, TOperatorValue, TOutputValue >
-::ThreadedGenerateData( const OutputRegionType& region,
-                        ThreadIdType itkNotUsed( threadId ) )
+::DynamicThreadedGenerateData( const OutputRegionType& region )
 {
   const TransformType * input = this->GetTransform();
 
