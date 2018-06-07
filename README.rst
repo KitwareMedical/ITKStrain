@@ -1,6 +1,15 @@
 ITKStrain
 =========
 
+.. |CircleCI| image:: https://circleci.com/gh/InsightSoftwareConsortium/ITKStrain.svg?style=shield
+    :target: https://circleci.com/gh/InsightSoftwareConsortium/ITKStrain
+
+.. |TravisCI| image:: https://travis-ci.org/InsightSoftwareConsortium/ITKStrain.svg?branch=master
+    :target: https://travis-ci.org/InsightSoftwareConsortium/ITKStrain
+
+.. |AppVeyor| image:: https://img.shields.io/appveyor/ci/thewtex/itkstrain.svg
+    :target: https://ci.appveyor.com/project/thewtex/itkstrain
+
 This repository contains `ITK <https://itk.org>`_ filters to estimate a
 strain tensor field from a displacement field or a spatial transformation.
 
