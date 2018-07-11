@@ -28,7 +28,7 @@ setup(
                      'In both cases, infinitesimal, Green-Lagrangian, or'
                      'Eulerian-Almansi strain can be generated.\n'
                      'Please refer to:\n'
-                     'M. Mccormick, “N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit.”,'
+                     'M. McCormick, “N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit.”,'
                      'Insight Journal, January-December 2017, http://hdl.handle.net/10380/3573',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
