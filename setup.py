@@ -20,15 +20,15 @@ setup(
     package_dir={'itk': 'itk'},
     download_url=r'https://github.com/InsightSoftwareConsortium/ITKStrain',
     description=r'ITK filters to estimate a strain tensor field from a displacement field or a spatial transformation',
-    long_description='ITKStrain provides N-dimensional computational'
-                     'framework of strain tensor images in the Insight'
-                     'Toolkit. The filters provided can compute a strain'
-                     'tensor image from a displacement field image and a'
-                     'strain tensor image from a general spatial transform.'
-                     'In both cases, infinitesimal, Green-Lagrangian, or'
+    long_description='itk-strain provides N-dimensional computational '
+                     'framework of strain tensor images in the Insight '
+                     'Toolkit. The filters provided can compute a strain '
+                     'tensor image from a displacement field image and a '
+                     'strain tensor image from a general spatial transform. '
+                     'In both cases, infinitesimal, Green-Lagrangian, or '
                      'Eulerian-Almansi strain can be generated.\n'
                      'Please refer to:\n'
-                     'M. McCormick, “N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit.”,'
+                     'M. McCormick, "N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit.", '
                      'Insight Journal, January-December 2017, http://hdl.handle.net/10380/3573',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
