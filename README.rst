@@ -1,6 +1,10 @@
 ITKStrain
 =========
 
+.. image:: https://dev.azure.com/ITKStrain/ITKStrain/_apis/build/status/KitwareMedical.ITKStrain?branchName=master
+   :target: https://dev.azure.com/ITKStrain/ITKStrain/_build/latest?definitionId=1&branchName=master
+   :alt: Build status
+
 .. |CircleCI| image:: https://circleci.com/gh/KitwareMedical/ITKStrain.svg?style=shield
     :target: https://circleci.com/gh/KitwareMedical/ITKStrain
 
