@@ -49,7 +49,7 @@ int itkStrainImageFilterRecursiveGaussianTest( int argc, char* argv[] )
 
   StrainFilterType::Pointer strainFilter = StrainFilterType::New();
 
-  EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
+  ITK_EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
     ImageToImageFilter );
 
 
@@ -58,7 +58,7 @@ int itkStrainImageFilterRecursiveGaussianTest( int argc, char* argv[] )
   gradientFilter->SetSigma( 1.0 );
 
   strainFilter->SetGradientFilter( gradientFilter.GetPointer() );
-  TEST_SET_GET_VALUE( gradientFilter.GetPointer(),
+  ITK_TEST_SET_GET_VALUE( gradientFilter.GetPointer(),
     strainFilter->GetGradientFilter() );
 
   InputImageType::Pointer inputDisplacements;
@@ -71,7 +71,7 @@ int itkStrainImageFilterRecursiveGaussianTest( int argc, char* argv[] )
 
   strainFilter->SetInput( inputDisplacements );
 
-  TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
 
 
   if( WriteOutStrains< PixelType, Dimension, TensorImageType >(

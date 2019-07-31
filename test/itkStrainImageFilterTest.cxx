@@ -47,7 +47,7 @@ int itkStrainImageFilterTest( int argc, char* argv[] )
 
   StrainFilterType::Pointer strainFilter = StrainFilterType::New();
 
-  EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
+  ITK_EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
     ImageToImageFilter );
 
 
@@ -68,7 +68,7 @@ int itkStrainImageFilterTest( int argc, char* argv[] )
   strainFilter->SetStrainForm(
     static_cast< StrainFilterType::StrainFormType >( strainForm ) );
 
-  TRY_EXPECT_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_EXCEPTION( strainFilter->Update() );
 
 
   // Get the input strain form
@@ -93,11 +93,11 @@ int itkStrainImageFilterTest( int argc, char* argv[] )
 
   strainFilter->SetStrainForm(
     static_cast< StrainFilterType::StrainFormType >( strainForm ) );
-  TEST_SET_GET_VALUE(
+  ITK_TEST_SET_GET_VALUE(
     static_cast< StrainFilterType::StrainFormType >( strainForm ),
     strainFilter->GetStrainForm() );
 
-  TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
 
 
   if( WriteOutStrains< PixelType, Dimension, TensorImageType >(
