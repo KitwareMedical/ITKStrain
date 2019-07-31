@@ -5,21 +5,13 @@ ITKStrain
    :target: https://dev.azure.com/ITKStrain/ITKStrain/_build/latest?definitionId=1&branchName=master
    :alt: Build status
 
-.. |CircleCI| image:: https://circleci.com/gh/KitwareMedical/ITKStrain.svg?style=shield
-    :target: https://circleci.com/gh/KitwareMedical/ITKStrain
+.. image:: https://img.shields.io/pypi/v/itk-strain.svg
+    :target: https://pypi.python.org/pypi/itk-strain
+    :alt: PyPI
 
-.. |TravisCI| image:: https://travis-ci.org/KitwareMedical/ITKStrain.svg?branch=master
-    :target: https://travis-ci.org/KitwareMedical/ITKStrain
-
-.. |AppVeyor| image:: https://img.shields.io/appveyor/ci/thewtex/itkstrain.svg
-    :target: https://ci.appveyor.com/project/KitwareMedical/ITKStrain
-
-=========== =========== ===========
-   Linux      macOS       Windows
-=========== =========== ===========
-|CircleCI|  |TravisCI|  |AppVeyor|
-=========== =========== ===========
-
+.. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+    :target: https://github.com/KitwareMedical/ITKStrain/blob/master/LICENSE)
+    :alt: License
 
 Overview
 --------
@@ -39,13 +31,22 @@ For more information, see the `Insight Journal article <http://hdl.handle.net/10
 Installation
 ------------
 
-Since ITK 4.12.0, this module is available in the ITK source tree as a Remote
-module. To enable it, set::
+To install the Python package::
+
+  pip install itk-strain
+
+To build the C++ module, either enable the CMake option in ITK's
+build configuration::
 
   Module_Strain:BOOL=ON
 
-in ITK's CMake build configuration.
+Or, build the module as a separate project against an ITK build tree::
 
+  git clone https://github.com/KitwareMedical/ITKStrain
+  mkdir ITKStrain-bulid
+  cd ITKStrain-build
+  cmake -DITK_DIR=/path/to/ITK-build ../ITKStrain
+  cmake --build .
 
 License
 -------
