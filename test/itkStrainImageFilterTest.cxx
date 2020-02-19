@@ -22,16 +22,17 @@
 #include "ReadInDisplacements.h"
 #include "WriteOutStrains.h"
 
-int itkStrainImageFilterTest( int argc, char* argv[] )
+int
+itkStrainImageFilterTest(int argc, char * argv[])
 {
-  if( argc < 4 )
-    {
+  if (argc < 4)
+  {
     std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputDisplacementImage outputPrefix strainForm";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   const char * inputDisplacementImageFileName = argv[1];
@@ -39,73 +40,67 @@ int itkStrainImageFilterTest( int argc, char* argv[] )
 
   constexpr unsigned int Dimension = 2;
   using PixelType = float;
-  using DisplacementVectorType = itk::Vector< PixelType, Dimension >;
-  using InputImageType = itk::Image< DisplacementVectorType, Dimension >;
+  using DisplacementVectorType = itk::Vector<PixelType, Dimension>;
+  using InputImageType = itk::Image<DisplacementVectorType, Dimension>;
 
-  using StrainFilterType = itk::StrainImageFilter< InputImageType, PixelType, PixelType >;
+  using StrainFilterType = itk::StrainImageFilter<InputImageType, PixelType, PixelType>;
   using TensorImageType = StrainFilterType::OutputImageType;
 
   StrainFilterType::Pointer strainFilter = StrainFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
-    ImageToImageFilter );
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(strainFilter, StrainImageFilter, ImageToImageFilter);
 
 
   InputImageType::Pointer inputDisplacements;
-  if( ReadInDisplacements< InputImageType >(
-    inputDisplacementImageFileName, inputDisplacements ) == EXIT_FAILURE )
-    {
+  if (ReadInDisplacements<InputImageType>(inputDisplacementImageFileName, inputDisplacements) == EXIT_FAILURE)
+  {
     std::cerr << "Test failed!" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  strainFilter->SetInput( inputDisplacements );
+  strainFilter->SetInput(inputDisplacements);
 
 
   // Test the unknown strain form exception
   int strainForm = -1;
 
-  strainFilter->SetStrainForm(
-    static_cast< StrainFilterType::StrainFormType >( strainForm ) );
+  strainFilter->SetStrainForm(static_cast<StrainFilterType::StrainFormType>(strainForm));
 
-  ITK_TRY_EXPECT_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_EXCEPTION(strainFilter->Update());
 
 
   // Get the input strain form
-  if( !strcmp( argv[3], "INFINITESIMAL" ) )
-    {
+  if (!strcmp(argv[3], "INFINITESIMAL"))
+  {
     strainForm = 0;
-    }
-  else if( !strcmp( argv[3], "GREENLAGRANGIAN" ) )
-    {
+  }
+  else if (!strcmp(argv[3], "GREENLAGRANGIAN"))
+  {
     strainForm = 1;
-    }
-  else if( !strcmp( argv[3], "EULERIANALMANSI" ) )
-    {
+  }
+  else if (!strcmp(argv[3], "EULERIANALMANSI"))
+  {
     strainForm = 2;
-    }
+  }
   else
-    {
+  {
     std::cerr << "Test failed!" << std::endl;
     std::cerr << "Unknown strain form: " << argv[3] << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  strainFilter->SetStrainForm(
-    static_cast< StrainFilterType::StrainFormType >( strainForm ) );
-  ITK_TEST_SET_GET_VALUE(
-    static_cast< StrainFilterType::StrainFormType >( strainForm ),
-    strainFilter->GetStrainForm() );
+  strainFilter->SetStrainForm(static_cast<StrainFilterType::StrainFormType>(strainForm));
+  ITK_TEST_SET_GET_VALUE(static_cast<StrainFilterType::StrainFormType>(strainForm), strainFilter->GetStrainForm());
 
-  ITK_TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_NO_EXCEPTION(strainFilter->Update());
 
 
-  if( WriteOutStrains< PixelType, Dimension, TensorImageType >(
-    outputFileNamePrefix, strainFilter->GetOutput() ) == EXIT_FAILURE )
-    {
+  if (WriteOutStrains<PixelType, Dimension, TensorImageType>(outputFileNamePrefix, strainFilter->GetOutput()) ==
+      EXIT_FAILURE)
+  {
     std::cerr << "Test failed!" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   std::cout << "Test finished." << std::endl;

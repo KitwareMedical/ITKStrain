@@ -21,25 +21,26 @@
 
 #include "itkImageFileReader.h"
 
-template< typename TDisplacementImageType  >
-int ReadInDisplacements( const char * inputFile, typename TDisplacementImageType::Pointer & inputImage )
+template <typename TDisplacementImageType>
+int
+ReadInDisplacements(const char * inputFile, typename TDisplacementImageType::Pointer & inputImage)
 {
   using InputImageType = TDisplacementImageType;
 
-  using ReaderType = itk::ImageFileReader< InputImageType >;
+  using ReaderType = itk::ImageFileReader<InputImageType>;
   typename ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( inputFile );
+  reader->SetFileName(inputFile);
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch (itk::ExceptionObject& ex)
-    {
+  }
+  catch (itk::ExceptionObject & ex)
+  {
     std::cerr << "Exception caught!" << std::endl;
     std::cerr << ex << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   inputImage = reader->GetOutput();
 
