@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ namespace itk
  * \sa DiffusionTensor3D
  * \sa NthElementImageAdaptor
  */
-template< typename TInputImage, typename TOutputImage, unsigned int TComponents = TInputImage::ImageDimension >
-class SplitComponentsImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TOutputImage, unsigned int TComponents = TInputImage::ImageDimension>
+class SplitComponentsImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(SplitComponentsImageFilter);
@@ -65,34 +64,37 @@ public:
 
   /** Standard class type alias. */
   using Self = SplitComponentsImageFilter;
-  using Superclass = ImageToImageFilter< InputImageType, OutputImageType >;
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
-  using ComponentsMaskType = FixedArray< bool, TComponents >;
+  using ComponentsMaskType = FixedArray<bool, TComponents>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( SplitComponentsImageFilter, ImageToImageFilter );
+  itkTypeMacro(SplitComponentsImageFilter, ImageToImageFilter);
 
   /** Method of creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Set/Get the components mask.  The mask is as long as the number of
    * components, and only values in the mask that evaluate are true will be
    * populated in the output.  The default is all true. */
-  itkSetMacro( ComponentsMask, ComponentsMaskType );
-  itkGetConstReferenceMacro( ComponentsMask, ComponentsMaskType );
+  itkSetMacro(ComponentsMask, ComponentsMaskType);
+  itkGetConstReferenceMacro(ComponentsMask, ComponentsMaskType);
 
 protected:
   SplitComponentsImageFilter();
-  ~SplitComponentsImageFilter() override {}
+  ~SplitComponentsImageFilter() override = default;
 
   /** Do not allocate outputs that we will not populate. */
-  void AllocateOutputs() override;
+  void
+  AllocateOutputs() override;
 
-  void DynamicThreadedGenerateData( const OutputRegionType& outputRegion ) override;
+  void
+  DynamicThreadedGenerateData(const OutputRegionType & outputRegion) override;
 
-  void PrintSelf ( std::ostream& os, Indent indent ) const override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   ComponentsMaskType m_ComponentsMask;
@@ -101,7 +103,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkSplitComponentsImageFilter.hxx"
+#  include "itkSplitComponentsImageFilter.hxx"
 #endif
 
 #endif

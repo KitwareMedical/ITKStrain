@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,67 +25,63 @@
 #include "itkNthElementImageAdaptor.h"
 #include "itkVTKImageIO.h"
 
-template< typename TPixel, unsigned int Dimension, typename TTensorImage >
-int WriteOutStrains( const char * outputPrefix, TTensorImage * strainImage )
+template <typename TPixel, unsigned int Dimension, typename TTensorImage>
+int
+WriteOutStrains(const char * outputPrefix, TTensorImage * strainImage)
 {
   using PixelType = TPixel;
   using TensorImageType = TTensorImage;
-  using ComponentImageType = itk::Image< PixelType, Dimension >;
+  using ComponentImageType = itk::Image<PixelType, Dimension>;
 
-  using TensorWriterType = itk::ImageFileWriter< TensorImageType >;
-  using TensorComponentWriterType = itk::ImageFileWriter< ComponentImageType >;
-  using AdaptorType = itk::NthElementImageAdaptor< TensorImageType, PixelType >;
+  using TensorWriterType = itk::ImageFileWriter<TensorImageType>;
+  using TensorComponentWriterType = itk::ImageFileWriter<ComponentImageType>;
+  using AdaptorType = itk::NthElementImageAdaptor<TensorImageType, PixelType>;
   using IOType = itk::VTKImageIO;
 
-  typename TensorWriterType::Pointer tensorWriter = TensorWriterType::New();
+  typename TensorWriterType::Pointer          tensorWriter = TensorWriterType::New();
   typename TensorComponentWriterType::Pointer tensorComponentWriter = TensorComponentWriterType::New();
-  typename ComponentImageType::Pointer outImage = ComponentImageType::New();
-  typename AdaptorType::Pointer adaptor = AdaptorType::New();
-  IOType::Pointer io = IOType::New();
+  typename ComponentImageType::Pointer        outImage = ComponentImageType::New();
+  typename AdaptorType::Pointer               adaptor = AdaptorType::New();
+  IOType::Pointer                             io = IOType::New();
 
-  tensorWriter->SetFileName( std::string( outputPrefix ) + "Output.vtk" );
-  tensorWriter->SetInput( strainImage );
+  tensorWriter->SetFileName(std::string(outputPrefix) + "Output.vtk");
+  tensorWriter->SetInput(strainImage);
   io->SetFileTypeToBinary();
-  tensorWriter->SetImageIO( io );
+  tensorWriter->SetImageIO(io);
 
-  outImage->SetRegions( strainImage->GetLargestPossibleRegion() );
+  outImage->SetRegions(strainImage->GetLargestPossibleRegion());
   outImage->Allocate();
-  tensorComponentWriter->SetInput( outImage );
-  adaptor->SetImage( strainImage );
+  tensorComponentWriter->SetInput(outImage);
+  adaptor->SetImage(strainImage);
 
   std::ostringstream ostr;
   try
-    {
+  {
     tensorWriter->Update();
-    for( unsigned int i = 0; i < 3; ++i )
-      {
-      ostr.str( "" );
-      ostr << outputPrefix << "Component" << i << ".mha";
-      adaptor->SelectNthElement( i );
-      adaptor->Update();
-      itk::ImageRegionConstIterator< AdaptorType > adaptorIt( adaptor,
-                                                              adaptor->GetBufferedRegion() );
-      itk::ImageRegionIterator< ComponentImageType > outputIt( outImage,
-                                                               outImage->GetLargestPossibleRegion() );
-      for( adaptorIt.GoToBegin(), outputIt.GoToBegin();
-           !adaptorIt.IsAtEnd();
-           ++adaptorIt, ++outputIt )
-        {
-        outputIt.Set( adaptorIt.Get() );
-        }
-      tensorComponentWriter->SetFileName( ostr.str() );
-      tensorComponentWriter->Update();
-      }
-    }
-  catch (itk::ExceptionObject& ex)
+    for (unsigned int i = 0; i < 3; ++i)
     {
+      ostr.str("");
+      ostr << outputPrefix << "Component" << i << ".mha";
+      adaptor->SelectNthElement(i);
+      adaptor->Update();
+      itk::ImageRegionConstIterator<AdaptorType>   adaptorIt(adaptor, adaptor->GetBufferedRegion());
+      itk::ImageRegionIterator<ComponentImageType> outputIt(outImage, outImage->GetLargestPossibleRegion());
+      for (adaptorIt.GoToBegin(), outputIt.GoToBegin(); !adaptorIt.IsAtEnd(); ++adaptorIt, ++outputIt)
+      {
+        outputIt.Set(adaptorIt.Get());
+      }
+      tensorComponentWriter->SetFileName(ostr.str());
+      tensorComponentWriter->Update();
+    }
+  }
+  catch (itk::ExceptionObject & ex)
+  {
     std::cerr << "Exception caught!" << std::endl;
     std::cerr << ex << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
-
 }
 
 #endif

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,11 +59,11 @@ namespace itk
  * \ingroup Strain
  *
  */
-template< typename TInputImage, typename TOperatorValueType=float, typename TOutputValueType=float >
-class StrainImageFilter : public
-  ImageToImageFilter< TInputImage,
-    Image< SymmetricSecondRankTensor< TOutputValueType, TInputImage::ImageDimension >,
-                                  TInputImage::ImageDimension > >
+template <typename TInputImage, typename TOperatorValueType = float, typename TOutputValueType = float>
+class StrainImageFilter
+  : public ImageToImageFilter<
+      TInputImage,
+      Image<SymmetricSecondRankTensor<TOutputValueType, TInputImage::ImageDimension>, TInputImage::ImageDimension>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(StrainImageFilter);
@@ -72,66 +72,74 @@ public:
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   using InputImageType = TInputImage;
-  using OutputPixelType = SymmetricSecondRankTensor< TOutputValueType, ImageDimension >;
-  using OutputImageType = Image< OutputPixelType, ImageDimension >;
-  using OperatorImageType = Image< TOperatorValueType, ImageDimension >;
+  using OutputPixelType = SymmetricSecondRankTensor<TOutputValueType, ImageDimension>;
+  using OutputImageType = Image<OutputPixelType, ImageDimension>;
+  using OperatorImageType = Image<TOperatorValueType, ImageDimension>;
 
   /** Standard class type alias. */
   using Self = StrainImageFilter;
-  using Superclass = ImageToImageFilter< InputImageType, OutputImageType >;
+  using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
 
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
 
   /** Type of the filter used to calculate the gradients. */
-  using GradientOutputPixelType = CovariantVector< TOperatorValueType, ImageDimension >;
-  using GradientOutputImageType = Image< GradientOutputPixelType, ImageDimension >;
-  using GradientFilterType = ImageToImageFilter< OperatorImageType, GradientOutputImageType >;
+  using GradientOutputPixelType = CovariantVector<TOperatorValueType, ImageDimension>;
+  using GradientOutputImageType = Image<GradientOutputPixelType, ImageDimension>;
+  using GradientFilterType = ImageToImageFilter<OperatorImageType, GradientOutputImageType>;
 
   /** Alternate type of filter used to calculate the gradients. */
-  using VectorGradientFilterType = ImageToImageFilter< InputImageType, GradientOutputImageType >;
+  using VectorGradientFilterType = ImageToImageFilter<InputImageType, GradientOutputImageType>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( StrainImageFilter, ImageToImageFilter );
+  itkTypeMacro(StrainImageFilter, ImageToImageFilter);
 
   /** Set the filter used to calculate the gradients internally. The default is
    * an itk::GradientImageFilter. */
-  itkSetObjectMacro( GradientFilter, GradientFilterType );
-  itkGetConstObjectMacro( GradientFilter, GradientFilterType );
+  itkSetObjectMacro(GradientFilter, GradientFilterType);
+  itkGetConstObjectMacro(GradientFilter, GradientFilterType);
 
   /** Set the filter used to calculate the gradients internally.  This filter
    * should take a Vector image as input and produce a CovariantVector gradient
    * image on each output corresponding to every Vector component.  If this
    * filter is non-NULL, it is used instead of the GradientFilter. */
-  itkSetObjectMacro( VectorGradientFilter, VectorGradientFilterType );
-  itkGetConstObjectMacro( VectorGradientFilter, VectorGradientFilterType );
+  itkSetObjectMacro(VectorGradientFilter, VectorGradientFilterType);
+  itkGetConstObjectMacro(VectorGradientFilter, VectorGradientFilterType);
 
   /**
    * Three different types of strains can be calculated, infinitesimal (default), aka
    * engineering strain, which is appropriate for small strains, Green-Lagrangian,
    * which uses a material reference system, and Eulerian-Almansi, which uses a
    * spatial reference system.  This is set with SetStrainForm(). */
-  enum StrainFormType {INFINITESIMAL = 0, GREENLAGRANGIAN = 1, EULERIANALMANSI = 2};
+  enum StrainFormType
+  {
+    INFINITESIMAL = 0,
+    GREENLAGRANGIAN = 1,
+    EULERIANALMANSI = 2
+  };
 
-  itkSetMacro( StrainForm, StrainFormType );
-  itkGetConstMacro( StrainForm, StrainFormType );
+  itkSetMacro(StrainForm, StrainFormType);
+  itkGetConstMacro(StrainForm, StrainFormType);
 
 protected:
   using OutputRegionType = typename OutputImageType::RegionType;
 
   StrainImageFilter();
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
-  void DynamicThreadedGenerateData( const OutputRegionType& outputRegion ) override;
+  void
+  DynamicThreadedGenerateData(const OutputRegionType & outputRegion) override;
 
-  using InputComponentsImageFilterType = itk::SplitComponentsImageFilter< InputImageType, OperatorImageType >;
+  using InputComponentsImageFilterType = itk::SplitComponentsImageFilter<InputImageType, OperatorImageType>;
 
-  void PrintSelf ( std::ostream& os, Indent indent ) const override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   typename InputComponentsImageFilterType::Pointer m_InputComponentsFilter;
@@ -146,7 +154,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkStrainImageFilter.hxx"
+#  include "itkStrainImageFilter.hxx"
 #endif
 
 #endif

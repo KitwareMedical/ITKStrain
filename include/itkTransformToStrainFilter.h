@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,10 +50,10 @@ namespace itk
  * \ingroup Strain
  *
  */
-template< typename TTransform, typename TOperatorValueType=float, typename TOutputValueType=float >
-class TransformToStrainFilter : public
-  GenerateImageSource< Image< SymmetricSecondRankTensor< TOutputValueType, TTransform::InputSpaceDimension >,
-                                  TTransform::InputSpaceDimension > >
+template <typename TTransform, typename TOperatorValueType = float, typename TOutputValueType = float>
+class TransformToStrainFilter
+  : public GenerateImageSource<Image<SymmetricSecondRankTensor<TOutputValueType, TTransform::InputSpaceDimension>,
+                                     TTransform::InputSpaceDimension>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(TransformToStrainFilter);
@@ -62,22 +62,22 @@ public:
   static constexpr unsigned int ImageDimension = TTransform::InputSpaceDimension;
 
   using TransformType = TTransform;
-  using TransformInputType = DataObjectDecorator< TransformType >;
-  using OutputPixelType = SymmetricSecondRankTensor< TOutputValueType, ImageDimension >;
-  using OutputImageType = Image< OutputPixelType, ImageDimension >;
+  using TransformInputType = DataObjectDecorator<TransformType>;
+  using OutputPixelType = SymmetricSecondRankTensor<TOutputValueType, ImageDimension>;
+  using OutputImageType = Image<OutputPixelType, ImageDimension>;
 
   /** Standard class type alias. */
   using Self = TransformToStrainFilter;
-  using Superclass = GenerateImageSource< OutputImageType >;
+  using Superclass = GenerateImageSource<OutputImageType>;
 
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( TransformToStrainFilter, GenerateImageSource );
+  itkTypeMacro(TransformToStrainFilter, GenerateImageSource);
 
   /** Get/Set the coordinate transformation.
    * Set the coordinate transform to use for resampling.  Note that this must
@@ -89,20 +89,28 @@ public:
    * engineering strain, which is appropriate for small strains, Green-Lagrangian,
    * which uses a material reference system, and Eulerian-Almansi, which uses a
    * spatial reference system.  This is set with SetStrainForm(). */
-  enum StrainFormType {INFINITESIMAL = 0, GREENLAGRANGIAN = 1, EULERIANALMANSI = 2};
+  enum StrainFormType
+  {
+    INFINITESIMAL = 0,
+    GREENLAGRANGIAN = 1,
+    EULERIANALMANSI = 2
+  };
 
-  itkSetMacro( StrainForm, StrainFormType );
-  itkGetConstMacro( StrainForm, StrainFormType );
+  itkSetMacro(StrainForm, StrainFormType);
+  itkGetConstMacro(StrainForm, StrainFormType);
 
 protected:
   using OutputRegionType = typename OutputImageType::RegionType;
 
   TransformToStrainFilter();
 
-  void BeforeThreadedGenerateData() override;
-  void DynamicThreadedGenerateData( const OutputRegionType& outputRegion ) override;
+  void
+  BeforeThreadedGenerateData() override;
+  void
+  DynamicThreadedGenerateData(const OutputRegionType & outputRegion) override;
 
-  void PrintSelf ( std::ostream& os, Indent indent ) const override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   StrainFormType m_StrainForm;
@@ -111,7 +119,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkTransformToStrainFilter.hxx"
+#  include "itkTransformToStrainFilter.hxx"
 #endif
 
 #endif

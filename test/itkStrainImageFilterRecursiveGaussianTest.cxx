@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright NumFOCUS
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,16 +23,17 @@
 #include "ReadInDisplacements.h"
 #include "WriteOutStrains.h"
 
-int itkStrainImageFilterRecursiveGaussianTest( int argc, char* argv[] )
+int
+itkStrainImageFilterRecursiveGaussianTest(int argc, char * argv[])
 {
-  if( argc < 3 )
-    {
+  if (argc < 3)
+  {
     std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " inputDisplacementImage outputPrefix ";
     std::cerr << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   const char * inputDisplacementImageFileName = argv[1];
@@ -40,46 +41,44 @@ int itkStrainImageFilterRecursiveGaussianTest( int argc, char* argv[] )
 
   constexpr unsigned int Dimension = 2;
   using PixelType = float;
-  using DisplacementVectorType = itk::Vector< PixelType, Dimension >;
-  using InputImageType = itk::Image< DisplacementVectorType, Dimension >;
+  using DisplacementVectorType = itk::Vector<PixelType, Dimension>;
+  using InputImageType = itk::Image<DisplacementVectorType, Dimension>;
 
-  using StrainFilterType = itk::StrainImageFilter< InputImageType, PixelType, PixelType >;
+  using StrainFilterType = itk::StrainImageFilter<InputImageType, PixelType, PixelType>;
   using TensorImageType = StrainFilterType::OutputImageType;
   using GradientOutputImageType = StrainFilterType::GradientOutputImageType;
 
   StrainFilterType::Pointer strainFilter = StrainFilterType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS( strainFilter, StrainImageFilter,
-    ImageToImageFilter );
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(strainFilter, StrainImageFilter, ImageToImageFilter);
 
 
-  using GradientFilterType = itk::GradientRecursiveGaussianImageFilter< itk::Image< PixelType, Dimension >, GradientOutputImageType >;
+  using GradientFilterType =
+    itk::GradientRecursiveGaussianImageFilter<itk::Image<PixelType, Dimension>, GradientOutputImageType>;
   GradientFilterType::Pointer gradientFilter = GradientFilterType::New();
-  gradientFilter->SetSigma( 1.0 );
+  gradientFilter->SetSigma(1.0);
 
-  strainFilter->SetGradientFilter( gradientFilter.GetPointer() );
-  ITK_TEST_SET_GET_VALUE( gradientFilter.GetPointer(),
-    strainFilter->GetGradientFilter() );
+  strainFilter->SetGradientFilter(gradientFilter.GetPointer());
+  ITK_TEST_SET_GET_VALUE(gradientFilter.GetPointer(), strainFilter->GetGradientFilter());
 
   InputImageType::Pointer inputDisplacements;
-  if( ReadInDisplacements< InputImageType >(
-    inputDisplacementImageFileName, inputDisplacements ) == EXIT_FAILURE )
-    {
+  if (ReadInDisplacements<InputImageType>(inputDisplacementImageFileName, inputDisplacements) == EXIT_FAILURE)
+  {
     std::cerr << "Test failed!" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
-  strainFilter->SetInput( inputDisplacements );
+  strainFilter->SetInput(inputDisplacements);
 
-  ITK_TRY_EXPECT_NO_EXCEPTION( strainFilter->Update() );
+  ITK_TRY_EXPECT_NO_EXCEPTION(strainFilter->Update());
 
 
-  if( WriteOutStrains< PixelType, Dimension, TensorImageType >(
-    outputFileNamePrefix, strainFilter->GetOutput() ) == EXIT_FAILURE )
-    {
+  if (WriteOutStrains<PixelType, Dimension, TensorImageType>(outputFileNamePrefix, strainFilter->GetOutput()) ==
+      EXIT_FAILURE)
+  {
     std::cerr << "Test failed!" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   std::cout << "Test finished." << std::endl;
