@@ -1,6 +1,8 @@
 ITKStrain
 =========
 
+.. image:: https://github.com/KitwareMedical/ITKStrain/workflows/Build,%20test,%20package/badge.svg
+
 .. image:: https://dev.azure.com/ITKStrain/ITKStrain/_apis/build/status/KitwareMedical.ITKStrain?branchName=master
    :target: https://dev.azure.com/ITKStrain/ITKStrain/_build/latest?definitionId=1&branchName=master
    :alt: Build status
