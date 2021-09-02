@@ -13,7 +13,7 @@ except ImportError:
 
 setup(
     name='itk-strain',
-    version='0.3.4',
+    version='0.3.5',
     author='Matthew M. McCormick',
     author_email='matt.mccormick@kitware.com',
     packages=['itk'],
