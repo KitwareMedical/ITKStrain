@@ -53,6 +53,6 @@ setup(
     keywords='ITK Strain Tensor Displacement Field',
     url=r'https://github.com/InsightSoftwareConsortium/ITKStrain',
     install_requires=[
-        r'itk>=5.2.1.post1'
+        r'itk>=5.3rc4'
     ]
     )
