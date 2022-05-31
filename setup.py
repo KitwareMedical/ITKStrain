@@ -29,7 +29,7 @@ setup(
                      'Eulerian-Almansi strain can be generated.\n'
                      'Please refer to:\n'
                      'M. McCormick, "N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit.", '
-                     'Insight Journal, January-December 2017, http://hdl.handle.net/10380/3573',
+                     'Insight Journal, January-December 2017, https://hdl.handle.net/10380/3573',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",

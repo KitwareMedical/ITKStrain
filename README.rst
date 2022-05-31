@@ -17,13 +17,13 @@ Overview
 This repository contains `ITK <https://itk.org>`_ filters to estimate a
 strain tensor field from a displacement field or a spatial transformation.
 
-For more information, see the `Insight Journal article <http://hdl.handle.net/10380/3573>`_::
+For more information, see the `Insight Journal article <https://hdl.handle.net/10380/3573>`_::
 
   McCormick M.
   N-Dimensional Computation of Strain Tensor Images in the Insight Toolkit
   The Insight Journal. January-December. 2017.
-  http://hdl.handle.net/10380/3573
-  http://insight-journal.org/browse/publication/984
+  https://hdl.handle.net/10380/3573
+  https://insight-journal.org/browse/publication/984
 
 
 Installation
