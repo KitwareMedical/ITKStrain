@@ -13,7 +13,7 @@ except ImportError:
 
 setup(
     name='itk-strain',
-    version='0.3.6',
+    version='0.3.7',
     author='Matthew M. McCormick',
     author_email='matt.mccormick@kitware.com',
     packages=['itk'],
@@ -53,6 +53,6 @@ setup(
     keywords='ITK Strain Tensor Displacement Field',
     url=r'https://github.com/InsightSoftwareConsortium/ITKStrain',
     install_requires=[
-        r'itk>=5.3rc4'
+        r'itk>=5.3rc4.post1'
     ]
     )
