@@ -7,8 +7,14 @@ env:
   itk-wheel-tag: "v5.3rc04.post2"
 
 jobs:
-  itk-build-test-package:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package.yml@99fc57f875bdaf12e5be3d18bf2a35ff7f0d1fb6
+  itk-build-test-cxx:
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@42b706c9b7e1b707a5583dfb588f6b7882e17feb
     with:
       itk-git-tag: "835dc01388d22c4b4c9a46b01dbdfe394ec23511"
+
+  itk-build-test-package-python:
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@42b706c9b7e1b707a5583dfb588f6b7882e17feb
+    with:
       itk-wheel-tag: "v5.3rc04.post2"
+    secrets:
+      pypi_password: "not-a-real-password"
