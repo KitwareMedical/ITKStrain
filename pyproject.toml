@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "itk-strain"
-version = "1.0.0"
+version = "1.0.1"
 description = "ITK filters to estimate a strain tensor field from a displacement field or a spatial transformation"
 readme = "README.rst"
 license = {file = "LICENSE"}
